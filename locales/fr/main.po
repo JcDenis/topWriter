@@ -1,0 +1,101 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: topWriter 0.4\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2013-11-12T17:15:44+00:00\n"
+"Last-Translator: Jean-Christian Denis\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: _widgets.php:26
+msgid "Top Writer: top comments"
+msgstr "Top Writer : top commentaires"
+
+#: _widgets.php:34
+msgid "Top comments"
+msgstr "Top commentaires"
+
+#: _widgets.php:29
+msgid "List users who write more posts"
+msgstr "Liste les utilisateurs qui ont écrit le plus de billets"
+
+#: _widgets.php:45
+#: _widgets.php:122
+msgid "Period:"
+msgstr "Période :"
+
+#: _widgets.php:49
+#: _widgets.php:126
+msgid "day"
+msgstr "jour"
+
+#: _widgets.php:50
+#: _widgets.php:127
+msgid "week"
+msgstr "semaine"
+
+#: _widgets.php:51
+#: _widgets.php:128
+msgid "month"
+msgstr "mois"
+
+#: _widgets.php:52
+#: _widgets.php:129
+msgid "year"
+msgstr "année"
+
+#: _widgets.php:53
+#: _widgets.php:130
+msgid "from begining"
+msgstr "depuis le début"
+
+#: _widgets.php:68
+#: _widgets.php:144
+msgid "Limit:"
+msgstr "Limite :"
+
+#: _widgets.php:74
+msgid "Exclude post writer from list"
+msgstr "Exclure de la liste les auteurs de billets"
+
+#: _widgets.php:99
+msgid "Top Writer: top entries"
+msgstr "Top Writer : top billets"
+
+#: _widgets.php:111
+msgid "Top entries"
+msgstr "Top billets"
+
+#: _widgets.php:106
+msgid "List users who write more comments"
+msgstr "Liste les utilisateurs qui ont écrit le plus de commentaires"
+
+#: _widgets.php:230
+#: _widgets.php:318
+msgid "Author link"
+msgstr "Lien vers l'auteur"
+
+#: _widgets.php:244
+msgid "one comment"
+msgid_plural "%s comments"
+msgstr[0] "un commentaire"
+msgstr[1] "%s commentaires"
+
+#: _widgets.php:314
+msgid "Author posts"
+msgstr "Billets de l'auteur"
+
+#: _widgets.php:323
+msgid "no post"
+msgstr "pas de billet"
+
+#: _widgets.php:326
+msgid "one post"
+msgid_plural "%s posts"
+msgstr[0] "un billet"
+msgstr[1] "%s billets"
+
+msgid "Ranking of the most prolific writers and/or commentators"
+msgstr "Classement des plus prolifiques rédacteurs et/ou commentateurs"
