@@ -9,14 +9,14 @@ Show most active contributor on a widget.
 
 ## REQUIREMENTS
 
- topWriter requires: 
+_topWriter_ requires: 
 
-  * permissions to manage widgets
-  * Dotclear 2.6
+ * permissions to manage widgets
+ * Dotclear 2.19
 
 ## USAGE
 
-First install topWriter, manualy from a zip package or from 
+First install _topWriter_, manualy from a zip package or from 
 Dotaddict repository. (See Dotclear's documentation to know how do this)
 
 Add and configure "Top writer" from widgets manager.

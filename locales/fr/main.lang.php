@@ -72,4 +72,3 @@ $GLOBALS['__l10n']['%s entries'] = '%s billets';
 $GLOBALS['__l10n']['un comment'] = 'un commentaire';
 
 $GLOBALS['__l10n']['%s comments'] = '%s commentaires';
-
