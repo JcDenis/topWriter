@@ -16,7 +16,7 @@ if (!defined('DC_RC_PATH')) {
 }
 
 $this->registerModule(
-    'topWriter',
+    'Top writer',
     'Ranking of the most prolific writers and/or commentators',
     'Jean-Christian Denis, Pierre Van Glabeke',
     '0.8.1',

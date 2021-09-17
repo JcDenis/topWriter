@@ -25,7 +25,7 @@ class topWriterWidget
         $w
             ->create(
                 'topcom',
-                __('Top Writer: top comments'),
+                __('Top writer: comments'),
                 ['topWriterWidget', 'topCom'],
                 null,
                 __('List users who write more comments')
@@ -81,7 +81,7 @@ class topWriterWidget
         $w
             ->create(
                 'toppost',
-                __('Top Writer: top entries'),
+                __('Top writer: entries'),
                 ['topWriterWidget', 'topPost'],
                 null,
                 __('List users who write more posts')

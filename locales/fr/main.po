@@ -1,14 +1,14 @@
 # Language: Français
-# Module: topWriter - 0.8
-# Date: 2021-08-27 20:05:38
-# Translated with translater 2021.08.18
+# Module: topWriter - 0.8.1
+# Date: 2021-09-17 21:01:42
+# Translated with translater 2021.09.02.1
 
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: topWriter 0.8\n"
+"Project-Id-Version: topWriter 0.8.1\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-08-27T20:05:38+00:00\n"
+"PO-Revision-Date: 2021-09-17T21:01:42+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: _widgets.php:28
-msgid "Top Writer: top comments"
-msgstr "Top Writer : top commentaires"
+msgid "Top writer: comments"
+msgstr "Top rédacteur : commentaires"
 
 #: _widgets.php:31
 msgid "List users who write more comments"
@@ -67,8 +67,8 @@ msgid "Exclude post writer from list"
 msgstr "Exclure de la liste les auteurs de billets"
 
 #: _widgets.php:84
-msgid "Top Writer: top entries"
-msgstr "Top Writer : top billets"
+msgid "Top writer: entries"
+msgstr "Top rédacteur : billets"
 
 #: _widgets.php:87
 msgid "List users who write more posts"
@@ -94,15 +94,12 @@ msgstr "aucun billet"
 msgid "Ranking of the most prolific writers and/or commentators"
 msgstr "Classement des plus prolifiques rédacteurs et/ou commentateurs"
 
-msgid "one entries"
-msgstr "un billet"
+msgid "one comment"
+msgid_plural "%s comments"
+msgstr[0] "un commentaire"
+msgstr[1] "%s commentaires"
 
-msgid "%s entries"
-msgstr "%s billets"
-
-msgid "un comment"
-msgstr "un commentaire"
-
-msgid "%s comments"
-msgstr "%s commentaires"
-
+msgid "one entry"
+msgid_plural "%s entries"
+msgstr[0] "un billet"
+msgstr[1] "%s billets"
