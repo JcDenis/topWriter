@@ -1,6 +1,9 @@
-0.8.1 - dev
+0.8.2 - dev
 - [ ] literal rank of writer depending of num of com
-- [x] clean up code
+
+0.8.1 - 2021.09.17
+- fix plurals and better translation
+- update readme file
 
 0.8 - 2021.08.27
 - clean up (PSR2, short array, ...)
