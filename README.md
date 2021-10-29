@@ -9,7 +9,7 @@
 
 ## WHAT IS TOPWRITER ?
 
-"Top writer" is a plugin for the open-source 
+_Top writer_ is a plugin for the open-source 
 web publishing software called Dotclear.
 
 Show most active contributor on a widget.
@@ -26,7 +26,7 @@ _topWriter_ requires:
 First install _topWriter_, manualy from a zip package or from 
 Dotaddict repository. (See Dotclear's documentation to know how do this)
 
-Add and configure "Top writer" from widgets manager.
+Add and configure _Top writer_ from widgets manager.
 There are two widget: entries and comments.
 
 ## LINKS

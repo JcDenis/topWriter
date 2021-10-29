@@ -21,11 +21,11 @@ $this->registerModule(
     'Jean-Christian Denis, Pierre Van Glabeke',
     '0.8.1',
     [
-        'requires' => [['core', '2.19']],
+        'requires'    => [['core', '2.19']],
         'permissions' => 'admin',
-        'type' => 'plugin',
-        'support' => 'http://forum.dotclear.org/viewtopic.php?pid=333002#p333002',
-        'details' => 'http://plugins.dotaddict.org/dc2/details/topWriter',
-        'repository' => 'https://raw.githubusercontent.com/JcDenis/topWriter/master/dcstore.xml'
+        'type'        => 'plugin',
+        'support'     => 'http://forum.dotclear.org/viewtopic.php?pid=333002#p333002',
+        'details'     => 'http://plugins.dotaddict.org/dc2/details/topWriter',
+        'repository'  => 'https://raw.githubusercontent.com/JcDenis/topWriter/master/dcstore.xml'
     ]
 );
