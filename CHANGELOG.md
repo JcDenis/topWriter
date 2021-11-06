@@ -1,5 +1,7 @@
 dev
 - [ ] literal rank of writer depending of num of com
+
+0.9 - 2021.11.06
 - add dashboard module
 - update translations
 - update to PSR12

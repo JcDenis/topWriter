@@ -18,7 +18,7 @@ $this->registerModule(
     'Top writer',
     'Ranking of the most prolific writers and/or commentators',
     'Jean-Christian Denis, Pierre Van Glabeke',
-    '0.8.1',
+    '0.9',
     [
         'requires'    => [['core', '2.19']],
         'permissions' => 'admin',
