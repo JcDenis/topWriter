@@ -1,6 +1,8 @@
-0.8.2 - dev
+dev
 - [ ] literal rank of writer depending of num of com
-- [ ] add dashboard module
+- add dashboard module
+- update translations
+- update to PSR12
 
 0.8.1 - 2021.09.17
 - fix plurals and better translation

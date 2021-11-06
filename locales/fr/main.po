@@ -1,18 +1,26 @@
-
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: topWriter 0.8.1\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-09-25T16:39:29+00:00\n"
+"PO-Revision-Date: 2021-11-06T20:12:30+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "Top writer: entries"
+msgstr "Top rédacteur : billets"
+
 msgid "Top writer: comments"
 msgstr "Top rédacteur : commentaires"
+
+msgid "Period:"
+msgstr "Période :"
+
+msgid "Limit:"
+msgstr "Limite :"
 
 msgid "List users who write more comments"
 msgstr "Liste les utilisateurs qui ont écrit le plus de commentaires"
@@ -20,32 +28,8 @@ msgstr "Liste les utilisateurs qui ont écrit le plus de commentaires"
 msgid "Top comments"
 msgstr "Top commentaires"
 
-msgid "Period:"
-msgstr "Période :"
-
-msgid "day"
-msgstr "jour"
-
-msgid "week"
-msgstr "semaine"
-
-msgid "month"
-msgstr "mois"
-
-msgid "year"
-msgstr "année"
-
-msgid "from begining"
-msgstr "depuis le début"
-
-msgid "Limit:"
-msgstr "Limite :"
-
 msgid "Exclude post writer from list"
 msgstr "Exclure de la liste les auteurs de billets"
-
-msgid "Top writer: entries"
-msgstr "Top rédacteur : billets"
 
 msgid "List users who write more posts"
 msgstr "Liste les utilisateurs qui ont écrit le plus de billets"
@@ -53,16 +37,11 @@ msgstr "Liste les utilisateurs qui ont écrit le plus de billets"
 msgid "Top entries"
 msgstr "Top billets"
 
-msgid "Author link"
-msgstr "Lien vers l'auteur"
-
-msgid "one comment"
-msgid_plural "%s comments"
-msgstr[0] "un commentaire"
-msgstr[1] "%s commentaires"
-
 msgid "Author posts"
 msgstr "Billets de l'auteur"
+
+msgid "Author link"
+msgstr "Lien vers l'auteur"
 
 msgid "no entries"
 msgstr "aucun billet"
@@ -71,6 +50,29 @@ msgid "one entry"
 msgid_plural "%s entries"
 msgstr[0] "une publication"
 msgstr[1] "%s publications"
+
+msgid "no comments"
+msgstr "aucun commentaire"
+
+msgid "one comment"
+msgid_plural "%s comments"
+msgstr[0] "un commentaire"
+msgstr[1] "%s commentaires"
+
+msgid "last day"
+msgstr "dernier jour"
+
+msgid "last week"
+msgstr "dernière semaine"
+
+msgid "last month"
+msgstr "dernier mois"
+
+msgid "last year"
+msgstr "dernière année"
+
+msgid "from begining"
+msgstr "depuis le début"
 
 msgid "Ranking of the most prolific writers and/or commentators"
 msgstr "Classement des plus prolifiques rédacteurs et/ou commentateurs"

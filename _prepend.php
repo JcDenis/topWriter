@@ -11,7 +11,7 @@
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
 if (!defined('DC_RC_PATH')) {
-    return null;
+    return;
 }
 
-require dirname(__FILE__) . '/_widgets.php';
+$__autoload['topWriter'] = dirname(__FILE__) . '/inc/class.topwriter.php';
