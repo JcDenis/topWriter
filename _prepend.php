@@ -14,4 +14,4 @@ if (!defined('DC_RC_PATH')) {
     return;
 }
 
-$__autoload['topWriter'] = dirname(__FILE__) . '/inc/class.topwriter.php';
+Clearbricks::lib()->autoload(['topWriter' => __DIR__ . '/inc/class.topwriter.php']);

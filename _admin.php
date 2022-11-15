@@ -14,18 +14,18 @@ if (!defined('DC_CONTEXT_ADMIN')) {
     return null;
 }
 
-require dirname(__FILE__) . '/_widgets.php';
+require __DIR__ . '/_widgets.php';
 
 # Dashboard item and user preference
-$core->addBehavior(
-    'adminDashboardItems',
+dcCore::app()->addBehavior(
+    'adminDashboardItemsV2',
     ['topWriterAdmin', 'adminDashboardItems']
 );
-$core->addBehavior(
-    'adminDashboardOptionsForm',
+dcCore::app()->addBehavior(
+    'adminDashboardOptionsFormV2',
     ['topWriterAdmin', 'adminDashboardOptionsForm']
 );
-$core->addBehavior(
+dcCore::app()->addBehavior(
     'adminAfterDashboardOptionsUpdate',
     ['topWriterAdmin', 'adminAfterDashboardOptionsUpdate']
 );
@@ -37,13 +37,13 @@ $core->addBehavior(
  */
 class topWriterAdmin
 {
-    public static function adminDashboardItems(dcCore $core, $__dashboard_items)
+    public static function adminDashboardItems($__dashboard_items)
     {
-        $pref = self::setDefaultPref($core);
+        $pref = self::setDefaultPref();
 
         # top posts
         if ($pref['topWriterPostsItems']) {
-            $lines = topWriter::posts($core, $pref['topWriterPostsPeriod'], $pref['topWriterPostsLimit']);
+            $lines = topWriter::posts($pref['topWriterPostsPeriod'], $pref['topWriterPostsLimit']);
             if (empty($lines)) {
                 return null;
             }
@@ -62,7 +62,7 @@ class topWriterAdmin
 
         # top comments
         if ($pref['topWriterCommentsItems']) {
-            $lines = topWriter::comments($core, $pref['topWriterCommentsPeriod'], $pref['topWriterCommentsLimit']);
+            $lines = topWriter::comments($pref['topWriterCommentsPeriod'], $pref['topWriterCommentsLimit']);
             if (empty($lines)) {
                 return null;
             }
@@ -80,9 +80,9 @@ class topWriterAdmin
         }
     }
 
-    public static function adminDashboardOptionsForm(dcCore $core)
+    public static function adminDashboardOptionsForm()
     {
-        $pref = self::setDefaultPref($core);
+        $pref = self::setDefaultPref();
 
         echo
         '<div class="fieldset">' .
@@ -110,80 +110,78 @@ class topWriterAdmin
 
     public static function adminAfterDashboardOptionsUpdate($user_id)
     {
-        global $core;
-
-        $core->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->dashboard->put(
             'topWriterPostsItems',
             !empty($_POST['topWriterPostsItems']),
             'boolean'
         );
-        $core->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->dashboard->put(
             'topWriterPostsPeriod',
             (string) $_POST['topWriterPostsPeriod'],
             'string'
         );
-        $core->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->dashboard->put(
             'topWriterPostsLimit',
             (int) $_POST['topWriterPostsLimit'],
             'integer'
         );
 
-        $core->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->dashboard->put(
             'topWriterCommentsItems',
             !empty($_POST['topWriterCommentsItems']),
             'boolean'
         );
-        $core->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->dashboard->put(
             'topWriterCommentsPeriod',
             (string) $_POST['topWriterCommentsPeriod'],
             'string'
         );
-        $core->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->dashboard->put(
             'topWriterCommentsLimit',
             (int) $_POST['topWriterCommentsLimit'],
             'integer'
         );
     }
 
-    private static function setDefaultPref($core)
+    private static function setDefaultPref()
     {
-        if (!$core->auth->user_prefs->dashboard->prefExists('topWriterPostsItems')) {
-            $core->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterPostsItems')) {
+            dcCore::app()->auth->user_prefs->dashboard->put(
                 'topWriterPostsItems',
                 false,
                 'boolean'
             );
         }
-        if (!$core->auth->user_prefs->dashboard->prefExists('topWriterPostsPeriod')) {
-            $core->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterPostsPeriod')) {
+            dcCore::app()->auth->user_prefs->dashboard->put(
                 'topWriterPostsPeriod',
                 'month',
                 'string'
             );
         }
-        if (!$core->auth->user_prefs->dashboard->prefExists('topWriterPostsLimit')) {
-            $core->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterPostsLimit')) {
+            dcCore::app()->auth->user_prefs->dashboard->put(
                 'topWriterPostsLimit',
                 10,
                 'integer'
             );
         }
-        if (!$core->auth->user_prefs->dashboard->prefExists('topWriterCommentsItems')) {
-            $core->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterCommentsItems')) {
+            dcCore::app()->auth->user_prefs->dashboard->put(
                 'topWriterCommentsItems',
                 false,
                 'boolean'
             );
         }
-        if (!$core->auth->user_prefs->dashboard->prefExists('topWriterCommentsPeriod')) {
-            $core->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterCommentsPeriod')) {
+            dcCore::app()->auth->user_prefs->dashboard->put(
                 'topWriterCommentsPeriod',
                 'month',
                 'string'
             );
         }
-        if (!$core->auth->user_prefs->dashboard->prefExists('topWriterCommentsLimit')) {
-            $core->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterCommentsLimit')) {
+            dcCore::app()->auth->user_prefs->dashboard->put(
                 'topWriterCommentsLimit',
                 10,
                 'integer'
@@ -191,12 +189,12 @@ class topWriterAdmin
         }
 
         return [
-            'topWriterPostsItems'     => $core->auth->user_prefs->dashboard->get('topWriterPostsItems'),
-            'topWriterPostsPeriod'    => $core->auth->user_prefs->dashboard->get('topWriterPostsPeriod'),
-            'topWriterPostsLimit'     => $core->auth->user_prefs->dashboard->get('topWriterPostsLimit') ?? 10,
-            'topWriterCommentsItems'  => $core->auth->user_prefs->dashboard->get('topWriterCommentsItems'),
-            'topWriterCommentsPeriod' => $core->auth->user_prefs->dashboard->get('topWriterCommentsPeriod'),
-            'topWriterCommentsLimit'  => $core->auth->user_prefs->dashboard->get('topWriterCommentsLimit') ?? 10
+            'topWriterPostsItems'     => dcCore::app()->auth->user_prefs->dashboard->get('topWriterPostsItems'),
+            'topWriterPostsPeriod'    => dcCore::app()->auth->user_prefs->dashboard->get('topWriterPostsPeriod'),
+            'topWriterPostsLimit'     => dcCore::app()->auth->user_prefs->dashboard->get('topWriterPostsLimit') ?? 10,
+            'topWriterCommentsItems'  => dcCore::app()->auth->user_prefs->dashboard->get('topWriterCommentsItems'),
+            'topWriterCommentsPeriod' => dcCore::app()->auth->user_prefs->dashboard->get('topWriterCommentsPeriod'),
+            'topWriterCommentsLimit'  => dcCore::app()->auth->user_prefs->dashboard->get('topWriterCommentsLimit') ?? 10,
         ];
     }
 }

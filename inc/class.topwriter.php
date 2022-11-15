@@ -16,30 +16,30 @@ if (!defined('DC_RC_PATH')) {
 
 class topWriter
 {
-    public static function posts(dcCore $core, string $period, int $limit, bool $sort_desc = true)
+    public static function posts(string $period, int $limit, bool $sort_desc = true)
     {
         $req = 'SELECT COUNT(*) AS count, U.user_id ' .
-            'FROM ' . $core->prefix . 'post P ' .
-            'INNER JOIN ' . $core->prefix . 'user U ON U.user_id = P.user_id ' .
-            "WHERE blog_id='" . $core->con->escape($core->blog->id) . "' " .
+            'FROM ' . dcCore::app()->prefix . 'post P ' .
+            'INNER JOIN ' . dcCore::app()->prefix . 'user U ON U.user_id = P.user_id ' .
+            "WHERE blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
             'AND post_status=1 AND user_status=1 ' .
             self::period('post_dt', $period) .
             'GROUP BY U.user_id ' .
             'ORDER BY count ' . ($sort_desc ? 'DESC' : 'ASC') . ' , U.user_id ASC ' .
-            $core->con->limit(abs((int) $limit));
+            dcCore::app()->con->limit(abs((int) $limit));
 
-        $rs = $core->con->select($req);
+        $rs = dcCore::app()->con->select($req);
         if ($rs->isEmpty()) {
             return null;
         }
 
-        $core->blog->settings->addNamespace('authormode');
+        dcCore::app()->blog->settings->addNamespace('authormode');
 
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
-            $user = $core->con->select(
-                'SELECT * FROM ' . $core->prefix . "user WHERE user_id='" . $rs->user_id . "' "
+            $user = dcCore::app()->con->select(
+                'SELECT * FROM ' . dcCore::app()->prefix . "user WHERE user_id='" . $rs->user_id . "' "
             );
             if ($user->isEmpty()) {
                 continue;
@@ -56,9 +56,9 @@ class topWriter
             }
 
             $i++;
-            if ($core->blog->settings->authormode->authormode_active) {
+            if (dcCore::app()->blog->settings->authormode->authormode_active) {
                 $res[$i]['author_link'] = '<a href="' .
-                    $core->blog->url . $core->url->getBase('author') . '/' . $user->user_id . '" ' .
+                    dcCore::app()->blog->url . dcCore::app()->url->getBase('author') . '/' . $user->user_id . '" ' .
                     'title="' . __('Author posts') . '">' . $author . '</a>';
             } elseif ($user->user_url) {
                 $res[$i]['author_link'] = '<a href="' . $user->user_url . '" title="' .
@@ -80,29 +80,29 @@ class topWriter
         return $res;
     }
 
-    public static function comments(dcCore $core, string $period, int $limit, bool $sort_desc = true, $exclude = false)
+    public static function comments(string $period, int $limit, bool $sort_desc = true, $exclude = false)
     {
         $req = 'SELECT COUNT(*) AS count, comment_email ' .
-        'FROM ' . $core->prefix . 'post P,  ' . $core->prefix . 'comment C ' .
+        'FROM ' . dcCore::app()->prefix . 'post P,  ' . dcCore::app()->prefix . 'comment C ' .
         'WHERE P.post_id=C.post_id ' .
-        "AND blog_id='" . $core->con->escape($core->blog->id) . "' " .
+        "AND blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
         'AND post_status=1 AND comment_status=1 ' .
         self::period('comment_dt', $period);
 
         if ($exclude) {
             $req .= 'AND comment_email NOT IN (' .
             ' SELECT U.user_email ' .
-            ' FROM ' . $core->prefix . 'user U' .
-            ' INNER JOIN ' . $core->prefix . 'post P ON P.user_id = U.user_id ' .
-            " WHERE blog_id='" . $core->con->escape($core->blog->id) . "' " .
+            ' FROM ' . dcCore::app()->prefix . 'user U' .
+            ' INNER JOIN ' . dcCore::app()->prefix . 'post P ON P.user_id = U.user_id ' .
+            " WHERE blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
             ' GROUP BY U.user_email) ';
         }
 
         $req .= 'GROUP BY comment_email ' .
         'ORDER BY count ' . ($sort_desc ? 'DESC' : 'ASC') . ' ' .
-        $core->con->limit(abs((int) $limit));
+        dcCore::app()->con->limit(abs((int) $limit));
 
-        $rs = $core->con->select($req);
+        $rs = dcCore::app()->con->select($req);
         if ($rs->isEmpty()) {
             return null;
         }
@@ -110,8 +110,8 @@ class topWriter
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
-            $user = $core->con->select(
-                'SELECT * FROM ' . $core->prefix . 'comment ' .
+            $user = dcCore::app()->con->select(
+                'SELECT * FROM ' . dcCore::app()->prefix . 'comment ' .
                 "WHERE comment_email='" . $rs->comment_email . "' " .
                 'ORDER BY comment_dt DESC'
             );
@@ -150,27 +150,25 @@ class topWriter
             case 'day':
                 $time = 3600 * 24;
 
-            break;
+                break;
 
             case 'week':
                 $time = 3600 * 24 * 7;
 
-            break;
+                break;
 
             case 'month':
                 $time = 3600 * 24 * 30;
 
-            break;
+                break;
 
             case 'year':
                 $time = 3600 * 24 * 30 * 12;
 
-            break;
+                break;
 
             default:
                 return '';
-
-            break;
         }
 
         return "AND $field > TIMESTAMP '" . dt::str($pattern, time() - $time) . "' ";
@@ -183,7 +181,7 @@ class topWriter
             __('last week')     => 'week',
             __('last month')    => 'month',
             __('last year')     => 'year',
-            __('from begining') => ''
+            __('from begining') => '',
         ];
     }
 }

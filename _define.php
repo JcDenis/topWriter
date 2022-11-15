@@ -18,13 +18,13 @@ $this->registerModule(
     'Top writer',
     'Ranking of the most prolific writers and/or commentators',
     'Jean-Christian Denis, Pierre Van Glabeke',
-    '0.9',
+    '0.10',
     [
-        'requires'    => [['core', '2.19']],
-        'permissions' => 'admin',
+        'requires'    => [['core', '2.24']],
+        'permissions' => dcAuth::PERMISSION_CONTENT_ADMIN,
         'type'        => 'plugin',
         'support'     => 'http://forum.dotclear.org/viewtopic.php?pid=333002#p333002',
         'details'     => 'http://plugins.dotaddict.org/dc2/details/topWriter',
-        'repository'  => 'https://raw.githubusercontent.com/JcDenis/topWriter/master/dcstore.xml'
+        'repository'  => 'https://raw.githubusercontent.com/JcDenis/topWriter/master/dcstore.xml',
     ]
 );

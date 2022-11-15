@@ -14,7 +14,7 @@ if (!defined('DC_RC_PATH')) {
     return null;
 }
 
-$core->addBehavior('initWidgets', ['topWriterWidget', 'init']);
+dcCore::app()->addBehavior('initWidgets', ['topWriterWidget', 'init']);
 
 class topWriterWidget
 {
@@ -50,7 +50,7 @@ class topWriterWidget
                 'combo',
                 [
                     __('Ascending')  => 'asc',
-                    __('Descending') => 'desc'
+                    __('Descending') => 'desc',
                 ]
             )
             ->setting(
@@ -100,7 +100,7 @@ class topWriterWidget
                 'combo',
                 [
                     __('Ascending')  => 'asc',
-                    __('Descending') => 'desc'
+                    __('Descending') => 'desc',
                 ]
             )
             ->setting(
@@ -117,16 +117,14 @@ class topWriterWidget
 
     public static function topCom($w)
     {
-        global $core;
-
         if ($w->offline
-            || ($w->homeonly == 1 && !$core->url->isHome($core->url->type))
-            || ($w->homeonly == 2 && $core->url->isHome($core->url->type))
+            || ($w->homeonly == 1 && !dcCore::app()->url->isHome(dcCore::app()->url->type))
+            || ($w->homeonly == 2 && dcCore::app()->url->isHome(dcCore::app()->url->type))
         ) {
             return null;
         }
 
-        $lines = topWriter::comments($core, $w->period, $w->limit, $w->sort == 'desc', $w->exclude);
+        $lines = topWriter::comments($w->period, $w->limit, $w->sort == 'desc', $w->exclude);
         if (empty($lines)) {
             return null;
         }
@@ -142,16 +140,14 @@ class topWriterWidget
 
     public static function topPost($w)
     {
-        global $core;
-
         if ($w->offline
-            || ($w->homeonly == 1 && !$core->url->isHome($core->url->type))
-            || ($w->homeonly == 2 && $core->url->isHome($core->url->type))
+            || ($w->homeonly == 1 && !dcCore::app()->url->isHome(dcCore::app()->url->type))
+            || ($w->homeonly == 2 && dcCore::app()->url->isHome(dcCore::app()->url->type))
         ) {
             return null;
         }
 
-        $lines = topWriter::posts($core, $w->period, $w->limit, $w->sort == 'desc');
+        $lines = topWriter::posts($w->period, $w->limit, $w->sort == 'desc');
         if (empty($lines)) {
             return null;
         }
