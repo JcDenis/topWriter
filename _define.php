@@ -21,7 +21,9 @@ $this->registerModule(
     '0.10',
     [
         'requires'    => [['core', '2.24']],
-        'permissions' => dcAuth::PERMISSION_CONTENT_ADMIN,
+        'permissions' => dcCore::app()->auth->makePermissions([
+            dcAuth::PERMISSION_CONTENT_ADMIN,
+        ]),
         'type'        => 'plugin',
         'support'     => 'http://forum.dotclear.org/viewtopic.php?pid=333002#p333002',
         'details'     => 'http://plugins.dotaddict.org/dc2/details/topWriter',
