@@ -1,6 +1,10 @@
 dev
 - [ ] literal rank of writer depending of num of com
 
+1.0 - 2022.12.23
+- use dotclear methods for widgets
+- fix permissions
+
 0.10 - 2022.11.20
 - fix compatibility with Dotclear 2.24 (required)
 

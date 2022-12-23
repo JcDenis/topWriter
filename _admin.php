@@ -19,11 +19,11 @@ require __DIR__ . '/_widgets.php';
 # Dashboard item and user preference
 dcCore::app()->addBehavior(
     'adminDashboardItemsV2',
-    ['topWriterAdmin', 'adminDashboardItems']
+    ['topWriterAdmin', 'adminDashboardItemsV2']
 );
 dcCore::app()->addBehavior(
     'adminDashboardOptionsFormV2',
-    ['topWriterAdmin', 'adminDashboardOptionsForm']
+    ['topWriterAdmin', 'adminDashboardOptionsFormV2']
 );
 dcCore::app()->addBehavior(
     'adminAfterDashboardOptionsUpdate',
@@ -37,7 +37,7 @@ dcCore::app()->addBehavior(
  */
 class topWriterAdmin
 {
-    public static function adminDashboardItems($__dashboard_items)
+    public static function adminDashboardItemsV2($__dashboard_items)
     {
         $pref = self::setDefaultPref();
 
@@ -80,7 +80,7 @@ class topWriterAdmin
         }
     }
 
-    public static function adminDashboardOptionsForm()
+    public static function adminDashboardOptionsFormV2()
     {
         $pref = self::setDefaultPref();
 
