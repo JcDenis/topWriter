@@ -117,10 +117,7 @@ class topWriterWidget
 
     public static function topCom($w)
     {
-        if ($w->offline
-            || ($w->homeonly == 1 && !dcCore::app()->url->isHome(dcCore::app()->url->type))
-            || ($w->homeonly == 2 && dcCore::app()->url->isHome(dcCore::app()->url->type))
-        ) {
+        if ($w->offline || !$w->checkHomeOnly(dcCore::app()->url->type)) {
             return null;
         }
 
@@ -140,10 +137,7 @@ class topWriterWidget
 
     public static function topPost($w)
     {
-        if ($w->offline
-            || ($w->homeonly == 1 && !dcCore::app()->url->isHome(dcCore::app()->url->type))
-            || ($w->homeonly == 2 && dcCore::app()->url->isHome(dcCore::app()->url->type))
-        ) {
+        if ($w->offline || !$w->checkHomeOnly(dcCore::app()->url->type)) {
             return null;
         }
 
