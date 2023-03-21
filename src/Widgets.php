@@ -10,22 +10,25 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-if (!defined('DC_RC_PATH')) {
-    return null;
-}
+declare(strict_types=1);
 
-dcCore::app()->addBehavior('initWidgets', ['topWriterWidget', 'init']);
+namespace Dotclear\Plugin\topWriter;
 
-class topWriterWidget
+use dcCore;
+use Dotclear\Plugin\widgets\WidgetsStack;
+use Dotclear\Plugin\widgets\WidgetsElement;
+use html;
+
+class Widgets
 {
-    public static function init($w)
+    public static function initWidgets(WidgetsStack $w): void
     {
         #Top comments widget
         $w
             ->create(
                 'topcom',
                 __('Top writer: comments'),
-                ['topWriterWidget', 'topCom'],
+                [self::class, 'topComWidget'],
                 null,
                 __('List users who write more comments')
             )
@@ -41,7 +44,7 @@ class topWriterWidget
                 __('Period:'),
                 'year',
                 'combo',
-                topWriter::periods()
+                Utils::periods()
             )
             ->setting(
                 'sort',
@@ -75,7 +78,7 @@ class topWriterWidget
             ->create(
                 'toppost',
                 __('Top writer: entries'),
-                ['topWriterWidget', 'topPost'],
+                [self::class, 'topPostWidget'],
                 null,
                 __('List users who write more posts')
             )
@@ -91,7 +94,7 @@ class topWriterWidget
                 __('Period:'),
                 'year',
                 'combo',
-                topWriter::periods()
+                Utils::periods()
             )
             ->setting(
                 'sort',
@@ -115,19 +118,19 @@ class topWriterWidget
             ->addOffline();
     }
 
-    public static function topCom($w)
+    public static function topComWidget(WidgetsElement $w): string
     {
         if ($w->offline || !$w->checkHomeOnly(dcCore::app()->url->type)) {
-            return null;
+            return '';
         }
 
-        $lines = topWriter::comments($w->period, $w->limit, $w->sort == 'desc', $w->exclude);
+        $lines = Utils::comments($w->period, (int) $w->limit, $w->sort == 'desc', (bool) $w->exclude);
         if (empty($lines)) {
-            return null;
+            return '';
         }
 
         return $w->renderDiv(
-            $w->content_only,
+            (bool) $w->content_only,
             'topcomments ' . $w->class,
             '',
             ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '') .
@@ -135,19 +138,19 @@ class topWriterWidget
         );
     }
 
-    public static function topPost($w)
+    public static function topPostWidget(WidgetsElement $w): string
     {
         if ($w->offline || !$w->checkHomeOnly(dcCore::app()->url->type)) {
-            return null;
+            return '';
         }
 
-        $lines = topWriter::posts($w->period, $w->limit, $w->sort == 'desc');
+        $lines = Utils::posts($w->period, (int) $w->limit, $w->sort == 'desc');
         if (empty($lines)) {
-            return null;
+            return '';
         }
 
         return $w->renderDiv(
-            $w->content_only,
+            (bool) $w->content_only,
             'topentries ' . $w->class,
             '',
             ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '') .
@@ -155,7 +158,7 @@ class topWriterWidget
         );
     }
 
-    private static function lines($lines, $id, $text)
+    private static function lines(array $lines, string $id, string $text): array
     {
         $li = [];
         foreach ($lines as $k => $line) {

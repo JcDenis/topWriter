@@ -10,77 +10,62 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-if (!defined('DC_CONTEXT_ADMIN')) {
-    return null;
-}
+declare(strict_types=1);
 
-require __DIR__ . '/_widgets.php';
+namespace Dotclear\Plugin\topWriter;
 
-# Dashboard item and user preference
-dcCore::app()->addBehavior(
-    'adminDashboardItemsV2',
-    ['topWriterAdmin', 'adminDashboardItemsV2']
-);
-dcCore::app()->addBehavior(
-    'adminDashboardOptionsFormV2',
-    ['topWriterAdmin', 'adminDashboardOptionsFormV2']
-);
-dcCore::app()->addBehavior(
-    'adminAfterDashboardOptionsUpdate',
-    ['topWriterAdmin', 'adminAfterDashboardOptionsUpdate']
-);
+use ArrayObject;
+use dcCore;
+use form;
+use html;
 
 /**
  * @ingroup DC_PLUGIN_TOPWRITER
  * @brief Display most active users - admin methods.
  * @since 2.6
  */
-class topWriterAdmin
+class BackendBehaviors
 {
-    public static function adminDashboardItemsV2($__dashboard_items)
+    public static function adminDashboardItemsV2(ArrayObject $__dashboard_items): void
     {
         $pref = self::setDefaultPref();
 
         # top posts
         if ($pref['topWriterPostsItems']) {
-            $lines = topWriter::posts($pref['topWriterPostsPeriod'], $pref['topWriterPostsLimit']);
-            if (empty($lines)) {
-                return null;
-            }
+            $lines = Utils::posts($pref['topWriterPostsPeriod'], $pref['topWriterPostsLimit']);
+            if (!empty($lines)) {
+                $li = [];
+                foreach ($lines as $k => $line) {
+                    $li[] = sprintf('<li><strong>%s</strong> %s (%s)</li>', $k, $line['author'], $line['count']);
+                }
 
-            $li = [];
-            foreach ($lines as $k => $line) {
-                $li[] = sprintf('<li><strong>%s</strong> %s (%s)</li>', $k, $line['author'], $line['count']);
+                # Display
+                $__dashboard_items[0][] = '<div class="box small" id="topWriterPostsItems">' .
+                '<h3>' . html::escapeHTML(__('Top writer: entries')) . '</h3>' .
+                '<ul>' . implode('', $li) . '</ul>' .
+                '</div>';
             }
-
-            # Display
-            $__dashboard_items[0][] = '<div class="box small" id="topWriterPostsItems">' .
-            '<h3>' . html::escapeHTML(__('Top writer: entries')) . '</h3>' .
-            '<ul>' . implode('', $li) . '</ul>' .
-            '</div>';
         }
 
         # top comments
         if ($pref['topWriterCommentsItems']) {
-            $lines = topWriter::comments($pref['topWriterCommentsPeriod'], $pref['topWriterCommentsLimit']);
-            if (empty($lines)) {
-                return null;
-            }
+            $lines = Utils::comments($pref['topWriterCommentsPeriod'], $pref['topWriterCommentsLimit']);
+            if (!empty($lines)) {
+                $li = [];
+                foreach ($lines as $k => $line) {
+                    $li[] = sprintf('<li><strong>%s</strong> %s (%s)</li>', $k, $line['author'], $line['count']);
+                }
 
-            $li = [];
-            foreach ($lines as $k => $line) {
-                $li[] = sprintf('<li><strong>%s</strong> %s (%s)</li>', $k, $line['author'], $line['count']);
+                # Display
+                $__dashboard_items[0][] = '<div class="box small" id="topWriterCommentsItems">' .
+                '<h3>' . html::escapeHTML(__('Top writer: comments')) . '</h3>' .
+                '<ul>' . implode('', $li) . '</ul>' .
+                '</div>';
             }
-
-            # Display
-            $__dashboard_items[0][] = '<div class="box small" id="topWriterCommentsItems">' .
-            '<h3>' . html::escapeHTML(__('Top writer: comments')) . '</h3>' .
-            '<ul>' . implode('', $li) . '</ul>' .
-            '</div>';
         }
     }
 
-    public static function adminDashboardOptionsFormV2()
+    public static function adminDashboardOptionsFormV2(): void
     {
         $pref = self::setDefaultPref();
 
@@ -91,7 +76,7 @@ class topWriterAdmin
         form::checkbox('topWriterPostsItems', 1, $pref['topWriterPostsItems']) . ' ' .
         __('Show') . '</label></p>' .
         '<p><label class="classic" for="topWriterPostsPeriod">' . __('Period:') . ' </label>' .
-        form::combo('topWriterPostsPeriod', topWriter::periods(), $pref['topWriterPostsPeriod']) . '</p>' .
+        form::combo('topWriterPostsPeriod', Utils::periods(), $pref['topWriterPostsPeriod']) . '</p>' .
         '<p><label class="classic" for="topWriterPostsLimit">' . __('Limit:') . ' </label>' .
         form::number('topWriterPostsLimit', ['min' => 1, 'max' => 20, 'default' => $pref['topWriterPostsLimit']]) . '</p>' .
         '</div>' .
@@ -102,86 +87,86 @@ class topWriterAdmin
         form::checkbox('topWriterCommentsItems', 1, $pref['topWriterCommentsItems']) . ' ' .
         __('Show') . '</label></p>' .
         '<p><label class="classic" for="topWriterCommentsPeriod">' . __('Period:') . ' </label>' .
-        form::combo('topWriterCommentsPeriod', topWriter::periods(), $pref['topWriterCommentsPeriod']) . '</p>' .
+        form::combo('topWriterCommentsPeriod', Utils::periods(), $pref['topWriterCommentsPeriod']) . '</p>' .
         '<p><label class="classic" for="topWriterCommentsLimit">' . __('Limit:') . ' </label>' .
         form::number('topWriterCommentsLimit', ['min' => 1, 'max' => 20, 'default' => $pref['topWriterCommentsLimit']]) . '</p>' .
         '</div>';
     }
 
-    public static function adminAfterDashboardOptionsUpdate($user_id)
+    public static function adminAfterDashboardOptionsUpdate(?string $user_id): void
     {
-        dcCore::app()->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterPostsItems',
             !empty($_POST['topWriterPostsItems']),
             'boolean'
         );
-        dcCore::app()->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterPostsPeriod',
             (string) $_POST['topWriterPostsPeriod'],
             'string'
         );
-        dcCore::app()->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterPostsLimit',
             (int) $_POST['topWriterPostsLimit'],
             'integer'
         );
 
-        dcCore::app()->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterCommentsItems',
             !empty($_POST['topWriterCommentsItems']),
             'boolean'
         );
-        dcCore::app()->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterCommentsPeriod',
             (string) $_POST['topWriterCommentsPeriod'],
             'string'
         );
-        dcCore::app()->auth->user_prefs->dashboard->put(
+        dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterCommentsLimit',
             (int) $_POST['topWriterCommentsLimit'],
             'integer'
         );
     }
 
-    private static function setDefaultPref()
+    private static function setDefaultPref(): array
     {
-        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterPostsItems')) {
-            dcCore::app()->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterPostsItems')) {
+            dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterPostsItems',
                 false,
                 'boolean'
             );
         }
-        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterPostsPeriod')) {
-            dcCore::app()->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterPostsPeriod')) {
+            dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterPostsPeriod',
                 'month',
                 'string'
             );
         }
-        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterPostsLimit')) {
-            dcCore::app()->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterPostsLimit')) {
+            dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterPostsLimit',
                 10,
                 'integer'
             );
         }
-        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterCommentsItems')) {
-            dcCore::app()->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterCommentsItems')) {
+            dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterCommentsItems',
                 false,
                 'boolean'
             );
         }
-        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterCommentsPeriod')) {
-            dcCore::app()->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterCommentsPeriod')) {
+            dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterCommentsPeriod',
                 'month',
                 'string'
             );
         }
-        if (!dcCore::app()->auth->user_prefs->dashboard->prefExists('topWriterCommentsLimit')) {
-            dcCore::app()->auth->user_prefs->dashboard->put(
+        if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterCommentsLimit')) {
+            dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterCommentsLimit',
                 10,
                 'integer'
@@ -189,12 +174,12 @@ class topWriterAdmin
         }
 
         return [
-            'topWriterPostsItems'     => dcCore::app()->auth->user_prefs->dashboard->get('topWriterPostsItems'),
-            'topWriterPostsPeriod'    => dcCore::app()->auth->user_prefs->dashboard->get('topWriterPostsPeriod'),
-            'topWriterPostsLimit'     => dcCore::app()->auth->user_prefs->dashboard->get('topWriterPostsLimit') ?? 10,
-            'topWriterCommentsItems'  => dcCore::app()->auth->user_prefs->dashboard->get('topWriterCommentsItems'),
-            'topWriterCommentsPeriod' => dcCore::app()->auth->user_prefs->dashboard->get('topWriterCommentsPeriod'),
-            'topWriterCommentsLimit'  => dcCore::app()->auth->user_prefs->dashboard->get('topWriterCommentsLimit') ?? 10,
+            'topWriterPostsItems'     => dcCore::app()->auth->user_prefs->get('dashboard')->get('topWriterPostsItems'),
+            'topWriterPostsPeriod'    => dcCore::app()->auth->user_prefs->get('dashboard')->get('topWriterPostsPeriod'),
+            'topWriterPostsLimit'     => dcCore::app()->auth->user_prefs->get('dashboard')->get('topWriterPostsLimit') ?? 10,
+            'topWriterCommentsItems'  => dcCore::app()->auth->user_prefs->get('dashboard')->get('topWriterCommentsItems'),
+            'topWriterCommentsPeriod' => dcCore::app()->auth->user_prefs->get('dashboard')->get('topWriterCommentsPeriod'),
+            'topWriterCommentsLimit'  => dcCore::app()->auth->user_prefs->get('dashboard')->get('topWriterCommentsLimit') ?? 10,
         ];
     }
 }

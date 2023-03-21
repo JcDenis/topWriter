@@ -10,17 +10,23 @@
  * @copyright Jean-Christian Denis
  * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
  */
-if (!defined('DC_RC_PATH')) {
-    return;
-}
+declare(strict_types=1);
 
-class topWriter
+namespace Dotclear\Plugin\topWriter;
+
+use dcAuth;
+use dcBlog;
+use dcCore;
+use dcUtils;
+use dt;
+
+class Utils
 {
-    public static function posts(string $period, int $limit, bool $sort_desc = true)
+    public static function posts(string $period, int $limit, bool $sort_desc = true): array
     {
         $req = 'SELECT COUNT(*) AS count, U.user_id ' .
-            'FROM ' . dcCore::app()->prefix . 'post P ' .
-            'INNER JOIN ' . dcCore::app()->prefix . 'user U ON U.user_id = P.user_id ' .
+            'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ' .
+            'INNER JOIN ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U ON U.user_id = P.user_id ' .
             "WHERE blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
             'AND post_status=1 AND user_status=1 ' .
             self::period('post_dt', $period) .
@@ -30,16 +36,14 @@ class topWriter
 
         $rs = dcCore::app()->con->select($req);
         if ($rs->isEmpty()) {
-            return null;
+            return [];
         }
-
-        dcCore::app()->blog->settings->addNamespace('authormode');
 
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
             $user = dcCore::app()->con->select(
-                'SELECT * FROM ' . dcCore::app()->prefix . "user WHERE user_id='" . $rs->user_id . "' "
+                'SELECT * FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . " WHERE user_id='" . $rs->user_id . "' "
             );
             if ($user->isEmpty()) {
                 continue;
@@ -56,7 +60,7 @@ class topWriter
             }
 
             $i++;
-            if (dcCore::app()->blog->settings->authormode->authormode_active) {
+            if (dcCore::app()->blog->settings->get('authormode')->get('authormode_active')) {
                 $res[$i]['author_link'] = '<a href="' .
                     dcCore::app()->blog->url . dcCore::app()->url->getBase('author') . '/' . $user->user_id . '" ' .
                     'title="' . __('Author posts') . '">' . $author . '</a>';
@@ -69,21 +73,17 @@ class topWriter
             if ($rs->count == 0) {
                 $res[$i]['count'] = __('no entries');
             } else {
-                $res[$i]['count'] = sprintf(__('one entry', '%s entries', $rs->count), $rs->count);
+                $res[$i]['count'] = sprintf(__('one entry', '%s entries', (int) $rs->count), $rs->count);
             }
         }
 
-        if (!$i) {
-            return null;
-        }
-
-        return $res;
+        return $i ? $res : [];
     }
 
-    public static function comments(string $period, int $limit, bool $sort_desc = true, $exclude = false)
+    public static function comments(string $period, int $limit, bool $sort_desc = true, bool $exclude = false): array
     {
         $req = 'SELECT COUNT(*) AS count, comment_email ' .
-        'FROM ' . dcCore::app()->prefix . 'post P,  ' . dcCore::app()->prefix . 'comment C ' .
+        'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P,  ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' C ' .
         'WHERE P.post_id=C.post_id ' .
         "AND blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
         'AND post_status=1 AND comment_status=1 ' .
@@ -92,8 +92,8 @@ class topWriter
         if ($exclude) {
             $req .= 'AND comment_email NOT IN (' .
             ' SELECT U.user_email ' .
-            ' FROM ' . dcCore::app()->prefix . 'user U' .
-            ' INNER JOIN ' . dcCore::app()->prefix . 'post P ON P.user_id = U.user_id ' .
+            ' FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U' .
+            ' INNER JOIN ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ON P.user_id = U.user_id ' .
             " WHERE blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
             ' GROUP BY U.user_email) ';
         }
@@ -104,14 +104,14 @@ class topWriter
 
         $rs = dcCore::app()->con->select($req);
         if ($rs->isEmpty()) {
-            return null;
+            return [];
         }
 
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
             $user = dcCore::app()->con->select(
-                'SELECT * FROM ' . dcCore::app()->prefix . 'comment ' .
+                'SELECT * FROM ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' ' .
                 "WHERE comment_email='" . $rs->comment_email . "' " .
                 'ORDER BY comment_dt DESC'
             );
@@ -131,15 +131,11 @@ class topWriter
             if ($rs->count == 0) {
                 $res[$i]['count'] = __('no comments');
             } else {
-                $res[$i]['count'] = sprintf(__('one comment', '%s comments', $rs->count), $rs->count);
+                $res[$i]['count'] = sprintf(__('one comment', '%s comments', (int) $rs->count), $rs->count);
             }
         }
 
-        if (!$i) {
-            return null;
-        }
-
-        return $res;
+        return $i ? $res : [];
     }
 
     private static function period(string $field, string $period): string
@@ -174,7 +170,7 @@ class topWriter
         return "AND $field > TIMESTAMP '" . dt::str($pattern, time() - $time) . "' ";
     }
 
-    public static function periods()
+    public static function periods(): array
     {
         return [
             __('last day')      => 'day',
