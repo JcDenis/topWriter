@@ -43,17 +43,17 @@ class Utils
         $i   = 0;
         while ($rs->fetch()) {
             $user = dcCore::app()->con->select(
-                'SELECT * FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . " WHERE user_id='" . $rs->user_id . "' "
+                'SELECT * FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . " WHERE user_id='" . $rs->f('user_id') . "' "
             );
             if ($user->isEmpty()) {
                 continue;
             }
 
             $author = dcUtils::getUserCN(
-                $user->user_id,
-                $user->user_name,
-                $user->user_firstname,
-                $user->user_displayname
+                $user->f('user_id'),
+                $user->f('user_name'),
+                $user->f('user_firstname'),
+                $user->f('user_displayname')
             );
             if (empty($author)) {
                 continue;
@@ -62,18 +62,18 @@ class Utils
             $i++;
             if (dcCore::app()->blog->settings->get('authormode')->get('authormode_active')) {
                 $res[$i]['author_link'] = '<a href="' .
-                    dcCore::app()->blog->url . dcCore::app()->url->getBase('author') . '/' . $user->user_id . '" ' .
+                    dcCore::app()->blog->url . dcCore::app()->url->getBase('author') . '/' . $user->f('user_id') . '" ' .
                     'title="' . __('Author posts') . '">' . $author . '</a>';
-            } elseif ($user->user_url) {
-                $res[$i]['author_link'] = '<a href="' . $user->user_url . '" title="' .
+            } elseif ($user->f('user_url')) {
+                $res[$i]['author_link'] = '<a href="' . $user->f('user_url') . '" title="' .
                     __('Author link') . '">' . $author . '</a>';
             }
             $res[$i]['author'] = $author;
 
-            if ($rs->count == 0) {
+            if ((int) $rs->f('count') == 0) {
                 $res[$i]['count'] = __('no entries');
             } else {
-                $res[$i]['count'] = sprintf(__('one entry', '%s entries', (int) $rs->count), $rs->count);
+                $res[$i]['count'] = sprintf(__('one entry', '%s entries', (int) $rs->f('count')), $rs->f('count'));
             }
         }
 
@@ -112,26 +112,26 @@ class Utils
         while ($rs->fetch()) {
             $user = dcCore::app()->con->select(
                 'SELECT * FROM ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' ' .
-                "WHERE comment_email='" . $rs->comment_email . "' " .
+                "WHERE comment_email='" . $rs->f('comment_email') . "' " .
                 'ORDER BY comment_dt DESC'
             );
 
-            if (!$user->comment_author) {
+            if (!$user->f('comment_author')) {
                 continue;
             }
 
             $i++;
 
-            if ($user->comment_site) {
-                $res[$i]['author_link'] = '<a href="' . $user->comment_site . '" title="' .
-                    __('Author link') . '">' . $user->comment_author . '</a>';
+            if ($user->f('comment_site')) {
+                $res[$i]['author_link'] = '<a href="' . $user->f('comment_site') . '" title="' .
+                    __('Author link') . '">' . $user->f('comment_author') . '</a>';
             }
-            $res[$i]['author'] = $user->comment_author;
+            $res[$i]['author'] = $user->f('comment_author');
 
-            if ($rs->count == 0) {
+            if ((int) $rs->f('count') == 0) {
                 $res[$i]['count'] = __('no comments');
             } else {
-                $res[$i]['count'] = sprintf(__('one comment', '%s comments', (int) $rs->count), $rs->count);
+                $res[$i]['count'] = sprintf(__('one comment', '%s comments', (int) $rs->f('count')), $rs->f('count'));
             }
         }
 
