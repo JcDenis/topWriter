@@ -16,8 +16,16 @@ namespace Dotclear\Plugin\topWriter;
 
 use ArrayObject;
 use dcCore;
-use form;
-use html;
+use Dotclear\Helper\Html\Form\{
+    Checkbox,
+    Div,
+    Label,
+    Number,
+    Para,
+    Select,
+    Text
+};
+use Dotclear\Helper\Html\Html;
 
 /**
  * @ingroup DC_PLUGIN_TOPWRITER
@@ -41,7 +49,7 @@ class BackendBehaviors
 
                 # Display
                 $__dashboard_items[0][] = '<div class="box small" id="topWriterPostsItems">' .
-                '<h3>' . html::escapeHTML(__('Top writer: entries')) . '</h3>' .
+                '<h3>' . Html::escapeHTML(__('Top writer: entries')) . '</h3>' .
                 '<ul>' . implode('', $li) . '</ul>' .
                 '</div>';
             }
@@ -58,7 +66,7 @@ class BackendBehaviors
 
                 # Display
                 $__dashboard_items[0][] = '<div class="box small" id="topWriterCommentsItems">' .
-                '<h3>' . html::escapeHTML(__('Top writer: comments')) . '</h3>' .
+                '<h3>' . Html::escapeHTML(__('Top writer: comments')) . '</h3>' .
                 '<ul>' . implode('', $li) . '</ul>' .
                 '</div>';
             }
@@ -70,27 +78,38 @@ class BackendBehaviors
         $pref = self::setDefaultPref();
 
         echo
-        '<div class="fieldset">' .
-        '<h4>' . __('Top writer: entries') . '</h4>' .
-        '<p><label class="classic" for="topWriterPostsItems">' .
-        form::checkbox('topWriterPostsItems', 1, $pref['topWriterPostsItems']) . ' ' .
-        __('Show') . '</label></p>' .
-        '<p><label class="classic" for="topWriterPostsPeriod">' . __('Period:') . ' </label>' .
-        form::combo('topWriterPostsPeriod', Utils::periods(), $pref['topWriterPostsPeriod']) . '</p>' .
-        '<p><label class="classic" for="topWriterPostsLimit">' . __('Limit:') . ' </label>' .
-        form::number('topWriterPostsLimit', ['min' => 1, 'max' => 20, 'default' => $pref['topWriterPostsLimit']]) . '</p>' .
-        '</div>' .
-
-        '<div class="fieldset">' .
-        '<h4>' . __('Top writer: comments') . '</h4>' .
-        '<p><label class="classic" for="topWriterCommentsItems">' .
-        form::checkbox('topWriterCommentsItems', 1, $pref['topWriterCommentsItems']) . ' ' .
-        __('Show') . '</label></p>' .
-        '<p><label class="classic" for="topWriterCommentsPeriod">' . __('Period:') . ' </label>' .
-        form::combo('topWriterCommentsPeriod', Utils::periods(), $pref['topWriterCommentsPeriod']) . '</p>' .
-        '<p><label class="classic" for="topWriterCommentsLimit">' . __('Limit:') . ' </label>' .
-        form::number('topWriterCommentsLimit', ['min' => 1, 'max' => 20, 'default' => $pref['topWriterCommentsLimit']]) . '</p>' .
-        '</div>';
+        (new Div())->items([
+            (new Div())->class('fieldset')->items([
+                (new Text('h4', __('Top writer: entries'))),
+                (new Para())->items([
+                    (new Checkbox('topWriterPostsItems', $pref['topWriterPostsItems']))->value(1),
+                    (new Label(__('Show'), Label::OUTSIDE_LABEL_AFTER))->for('topWriterPostsItems')->class('classic'),
+                ]),
+                (new Para())->class('field')->items([
+                    (new Label(__('Period:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterPostsPeriod'),
+                    (new Select('topWriterPostsPeriod'))->default($pref['topWriterPostsPeriod'])->items(Utils::periods()),
+                ]),
+                (new Para())->class('field')->items([
+                    (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterPostsLimit'),
+                    (new Number('topWriterPostsLimit'))->min(1)->max(20)->value($pref['topWriterPostsLimit']),
+                ]),
+            ]),
+            (new Div())->class('fieldset')->items([
+                (new Text('h4', __('Top writer: comments'))),
+                (new Para())->items([
+                    (new Checkbox('topWriterCommentsItems', $pref['topWriterCommentsItems']))->value(1),
+                    (new Label(__('Show'), Label::OUTSIDE_LABEL_AFTER))->for('topWriterCommentsItems')->class('classic'),
+                ]),
+                (new Para())->class('field')->items([
+                    (new Label(__('Period:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterCommentsPeriod'),
+                    (new Select('topWriterCommentsPeriod'))->default($pref['topWriterCommentsPeriod'])->items(Utils::periods()),
+                ]),
+                (new Para())->class('field')->items([
+                    (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterCommentsLimit'),
+                    (new Number('topWriterCommentsLimit'))->min(1)->max(20)->value($pref['topWriterCommentsLimit']),
+                ]),
+            ]),
+        ])->render();
     }
 
     public static function adminAfterDashboardOptionsUpdate(?string $user_id): void

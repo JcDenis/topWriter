@@ -15,9 +15,9 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\topWriter;
 
 use dcCore;
+use Dotclear\Helper\Html\Html;
 use Dotclear\Plugin\widgets\WidgetsStack;
 use Dotclear\Plugin\widgets\WidgetsElement;
-use html;
 
 class Widgets
 {
@@ -133,7 +133,7 @@ class Widgets
             (bool) $w->content_only,
             'topcomments ' . $w->class,
             '',
-            ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '') .
+            ($w->title ? $w->renderTitle(Html::escapeHTML($w->title)) : '') .
             sprintf('<ul>%s</ul>', implode('', self::lines($lines, 'comments', $w->text)))
         );
     }
@@ -153,7 +153,7 @@ class Widgets
             (bool) $w->content_only,
             'topentries ' . $w->class,
             '',
-            ($w->title ? $w->renderTitle(html::escapeHTML($w->title)) : '') .
+            ($w->title ? $w->renderTitle(Html::escapeHTML($w->title)) : '') .
             sprintf('<ul>%s</ul>', implode('', self::lines($lines, 'posts', $w->text)))
         );
     }
