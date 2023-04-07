@@ -27,7 +27,7 @@ class Utils
         $req = 'SELECT COUNT(*) AS count, U.user_id ' .
             'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ' .
             'INNER JOIN ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U ON U.user_id = P.user_id ' .
-            "WHERE blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
+            "WHERE blog_id='" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->id) . "' " .
             'AND post_status=1 AND user_status=1 ' .
             self::period('post_dt', $period) .
             'GROUP BY U.user_id ' .
@@ -85,7 +85,7 @@ class Utils
         $req = 'SELECT COUNT(*) AS count, comment_email ' .
         'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P,  ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' C ' .
         'WHERE P.post_id=C.post_id ' .
-        "AND blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
+        "AND blog_id='" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->id) . "' " .
         'AND post_status=1 AND comment_status=1 ' .
         self::period('comment_dt', $period);
 
@@ -94,7 +94,7 @@ class Utils
             ' SELECT U.user_email ' .
             ' FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U' .
             ' INNER JOIN ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ON P.user_id = U.user_id ' .
-            " WHERE blog_id='" . dcCore::app()->con->escape(dcCore::app()->blog->id) . "' " .
+            " WHERE blog_id='" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->id) . "' " .
             ' GROUP BY U.user_email) ';
         }
 
