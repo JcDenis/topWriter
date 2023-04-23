@@ -38,7 +38,7 @@ class Utils
             ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
             ->columns([
                 $sql->count('*', 'count'),
-                'U.user_id'
+                'U.user_id',
             ])
             ->join(
                 (new JoinStatement())
@@ -55,7 +55,7 @@ class Utils
             ->limit(abs((int) $limit));
 
         self::period($sql, $period, 'post_dt');
-        
+
         $rs = $sql->select();
 
         if (is_null($rs) || $rs->isEmpty()) {
@@ -65,7 +65,7 @@ class Utils
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
-            $sql = new SelectStatement();
+            $sql  = new SelectStatement();
             $user = $sql
                 ->from(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME)
                 ->column('*')
@@ -120,7 +120,7 @@ class Utils
             ->from($sql->as(dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME, 'C'))
             ->columns([
                 $sql->count('*', 'count'),
-                'comment_email'
+                'comment_email',
             ])
             ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
             ->and('P.post_id = C.post_id')
@@ -159,7 +159,7 @@ class Utils
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
-            $sql = new SelectStatement();
+            $sql  = new SelectStatement();
             $user = $sql
                 ->from(dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME)
                 ->column('*')
