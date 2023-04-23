@@ -24,6 +24,11 @@ class Utils
 {
     public static function posts(string $period, int $limit, bool $sort_desc = true): array
     {
+        // nullsafe
+        if (is_null(dcCore::app()->blog)) {
+            return [];
+        }
+
         $req = 'SELECT COUNT(*) AS count, U.user_id ' .
             'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ' .
             'INNER JOIN ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U ON U.user_id = P.user_id ' .
@@ -82,6 +87,11 @@ class Utils
 
     public static function comments(string $period, int $limit, bool $sort_desc = true, bool $exclude = false): array
     {
+        // nullsafe
+        if (is_null(dcCore::app()->blog)) {
+            return [];
+        }
+
         $req = 'SELECT COUNT(*) AS count, comment_email ' .
         'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P,  ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' C ' .
         'WHERE P.post_id=C.post_id ' .
