@@ -18,6 +18,10 @@ use dcAuth;
 use dcBlog;
 use dcCore;
 use dcUtils;
+use Dotclear\Database\Statement\{
+    JoinStatement,
+    SelectStatement
+};
 use Dotclear\Helper\Date;
 
 class Utils
@@ -29,28 +33,46 @@ class Utils
             return [];
         }
 
-        $req = 'SELECT COUNT(*) AS count, U.user_id ' .
-            'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ' .
-            'INNER JOIN ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U ON U.user_id = P.user_id ' .
-            "WHERE blog_id='" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->id) . "' " .
-            'AND post_status=1 AND user_status=1 ' .
-            self::period('post_dt', $period) .
-            'GROUP BY U.user_id ' .
-            'ORDER BY count ' . ($sort_desc ? 'DESC' : 'ASC') . ' , U.user_id ASC ' .
-            dcCore::app()->con->limit(abs((int) $limit));
+        $sql = new SelectStatement();
+        $sql
+            ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
+            ->columns([
+                $sql->count('*', 'count'),
+                'U.user_id'
+            ])
+            ->join(
+                (new JoinStatement())
+                    ->inner()
+                    ->from($sql->as(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME, 'U'))
+                    ->on('U.user_id = P.user_id')
+                    ->statement()
+            )
+            ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
+            ->and('post_status = ' . dcBlog::POST_PUBLISHED)
+            ->and('user_status = 1')
+            ->group('U.user_id')
+            ->order('count ' . ($sort_desc ? 'DESC' : 'ASC') . ' , U.user_id ASC')
+            ->limit(abs((int) $limit));
 
-        $rs = dcCore::app()->con->select($req);
-        if ($rs->isEmpty()) {
+        self::period($sql, $period, 'post_dt');
+        
+        $rs = $sql->select();
+
+        if (is_null($rs) || $rs->isEmpty()) {
             return [];
         }
 
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
-            $user = dcCore::app()->con->select(
-                'SELECT * FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . " WHERE user_id='" . $rs->f('user_id') . "' "
-            );
-            if ($user->isEmpty()) {
+            $sql = new SelectStatement();
+            $user = $sql
+                ->from(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME)
+                ->column('*')
+                ->where('user_id = ' . $sql->quote($rs->f('user_id')))
+                ->select();
+
+            if (is_null($user) || $user->isEmpty()) {
                 continue;
             }
 
@@ -92,41 +114,60 @@ class Utils
             return [];
         }
 
-        $req = 'SELECT COUNT(*) AS count, comment_email ' .
-        'FROM ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P,  ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' C ' .
-        'WHERE P.post_id=C.post_id ' .
-        "AND blog_id='" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->id) . "' " .
-        'AND post_status=1 AND comment_status=1 ' .
-        self::period('comment_dt', $period);
+        $sql = new SelectStatement();
+        $sql
+            ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
+            ->from($sql->as(dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME, 'C'))
+            ->columns([
+                $sql->count('*', 'count'),
+                'comment_email'
+            ])
+            ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
+            ->and('P.post_id = C.post_id')
+            ->and('post_status = ' . dcBlog::POST_PUBLISHED)
+            ->and('comment_status = ' . dcBlog::COMMENT_PUBLISHED)
+            ->group('comment_email')
+            ->order('count ' . ($sort_desc ? 'DESC' : 'ASC'))
+            ->limit(abs((int) $limit))
+        ;
+
+        self::period($sql, $period, 'comment_dt');
 
         if ($exclude) {
-            $req .= 'AND comment_email NOT IN (' .
-            ' SELECT U.user_email ' .
-            ' FROM ' . dcCore::app()->prefix . dcAuth::USER_TABLE_NAME . ' U' .
-            ' INNER JOIN ' . dcCore::app()->prefix . dcBlog::POST_TABLE_NAME . ' P ON P.user_id = U.user_id ' .
-            " WHERE blog_id='" . dcCore::app()->con->escapeStr((string) dcCore::app()->blog->id) . "' " .
-            ' GROUP BY U.user_email) ';
+            $sql->and('comment_email NOT IN (' .
+                (new SelectStatement())
+                    ->from($sql->as(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME, 'U'))
+                    ->column('U.user_email')
+                    ->join(
+                        (new JoinStatement())
+                            ->inner()
+                            ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
+                            ->on('P.user_id = U.user_id')
+                            ->statement()
+                    )
+                    ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
+                    ->group('U.user_email')
+                    ->statement() .
+            ')');
         }
 
-        $req .= 'GROUP BY comment_email ' .
-        'ORDER BY count ' . ($sort_desc ? 'DESC' : 'ASC') . ' ' .
-        dcCore::app()->con->limit(abs((int) $limit));
-
-        $rs = dcCore::app()->con->select($req);
-        if ($rs->isEmpty()) {
+        $rs = $sql->select();
+        if (is_null($rs) || $rs->isEmpty()) {
             return [];
         }
 
         $res = [];
         $i   = 0;
         while ($rs->fetch()) {
-            $user = dcCore::app()->con->select(
-                'SELECT * FROM ' . dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME . ' ' .
-                "WHERE comment_email='" . $rs->f('comment_email') . "' " .
-                'ORDER BY comment_dt DESC'
-            );
+            $sql = new SelectStatement();
+            $user = $sql
+                ->from(dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME)
+                ->column('*')
+                ->where('comment_email = ' . $sql->quote($rs->f('comment_email')))
+                ->order('comment_dt DESC')
+                ->select();
 
-            if (!$user->f('comment_author')) {
+            if (is_null($user) || !$user->f('comment_author')) {
                 continue;
             }
 
@@ -148,7 +189,7 @@ class Utils
         return $i ? $res : [];
     }
 
-    private static function period(string $field, string $period): string
+    private static function period(SelectStatement $sql, string $period, string $field): void
     {
         $pattern = '%Y-%m-%d %H:%M:%S';
         $time    = 0;
@@ -174,10 +215,10 @@ class Utils
                 break;
 
             default:
-                return '';
+                return;
         }
 
-        return "AND $field > TIMESTAMP '" . Date::str($pattern, time() - $time) . "' ";
+        $sql->and($field . ' > TIMESTAMP ' . $sql->quote(Date::str($pattern, time() - $time)));
     }
 
     public static function periods(): array
