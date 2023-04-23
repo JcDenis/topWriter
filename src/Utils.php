@@ -18,7 +18,7 @@ use dcAuth;
 use dcBlog;
 use dcCore;
 use dcUtils;
-use dt;
+use Dotclear\Helper\Date;
 
 class Utils
 {
@@ -167,7 +167,7 @@ class Utils
                 return '';
         }
 
-        return "AND $field > TIMESTAMP '" . dt::str($pattern, time() - $time) . "' ";
+        return "AND $field > TIMESTAMP '" . Date::str($pattern, time() - $time) . "' ";
     }
 
     public static function periods(): array
