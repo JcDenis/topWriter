@@ -1,7 +1,14 @@
 dev
 - [ ] literal rank of writer depending of num of com
 
-1.1
+1.2 - 2023.04.23
+- require dotclear 2.26
+- use latest dotclear namespace
+- use sql statement
+- fix plural translations
+- fix nullsafe warnings
+
+1.1 - 2023.03.21
 - require Dotclear 2.25
 - use namespace
 

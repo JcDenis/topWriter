@@ -2,11 +2,11 @@
 <modules xmlns:da="http://dotaddict.org/da/">
   <module id="topWriter">
     <name>Top writer</name>
-    <version>1.1</version>
+    <version>1.2</version>
     <author>Jean-Christian Denis, Pierre Van Glabeke</author>
     <desc>Ranking of the most prolific writers and/or commentators</desc>
-    <file>https://github.com/JcDenis/topWriter/releases/download/v1.1/plugin-topWriter.zip</file>
-    <da:dcmin>2.25</da:dcmin>
+    <file>https://github.com/JcDenis/topWriter/releases/download/v1.2/plugin-topWriter.zip</file>
+    <da:dcmin>2.26</da:dcmin>
     <da:details>http://plugins.dotaddict.org/dc2/details/topWriter</da:details>
     <da:support>http://forum.dotclear.org/viewtopic.php?pid=333002#p333002</da:support>
   </module>
