@@ -114,11 +114,6 @@ class BackendBehaviors
 
     public static function adminAfterDashboardOptionsUpdate(?string $user_id): void
     {
-        // nullsafe
-        if (is_null(dcCore::app()->auth) || is_null(dcCore::app()->auth->user_prefs)) {
-            return;
-        }
-
         dcCore::app()->auth->user_prefs->get('dashboard')->put(
             'topWriterPostsItems',
             !empty($_POST['topWriterPostsItems']),
@@ -154,11 +149,6 @@ class BackendBehaviors
 
     private static function setDefaultPref(): array
     {
-        // nullsafe
-        if (is_null(dcCore::app()->auth) || is_null(dcCore::app()->auth->user_prefs)) {
-            return [];
-        }
-
         if (!dcCore::app()->auth->user_prefs->get('dashboard')->prefExists('topWriterPostsItems')) {
             dcCore::app()->auth->user_prefs->get('dashboard')->put(
                 'topWriterPostsItems',
