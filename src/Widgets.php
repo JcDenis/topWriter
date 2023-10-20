@@ -1,24 +1,21 @@
 <?php
-/**
- * @brief topWriter, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Jean-Christian Denis, Pierre Van Glabeke
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\topWriter;
 
-use dcCore;
+use Dotclear\App;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Plugin\widgets\WidgetsStack;
 use Dotclear\Plugin\widgets\WidgetsElement;
 
+/**
+ * @brief       topWriter widgets class.
+ * @ingroup     topWriter
+ *
+ * @author      Jean-Christian Denis
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
 class Widgets
 {
     public static function initWidgets(WidgetsStack $w): void
@@ -28,7 +25,7 @@ class Widgets
             ->create(
                 'topcom',
                 __('Top writer: comments'),
-                [self::class, 'topComWidget'],
+                self::topComWidget(...),
                 null,
                 __('List users who write more comments')
             )
@@ -78,7 +75,7 @@ class Widgets
             ->create(
                 'toppost',
                 __('Top writer: entries'),
-                [self::class, 'topPostWidget'],
+                self::topPostWidget(...),
                 null,
                 __('List users who write more posts')
             )
@@ -120,7 +117,7 @@ class Widgets
 
     public static function topComWidget(WidgetsElement $w): string
     {
-        if ($w->offline || !$w->checkHomeOnly(dcCore::app()->url->type)) {
+        if ($w->offline || !$w->checkHomeOnly(App::url()->type)) {
             return '';
         }
 
@@ -140,7 +137,7 @@ class Widgets
 
     public static function topPostWidget(WidgetsElement $w): string
     {
-        if ($w->offline || !$w->checkHomeOnly(dcCore::app()->url->type)) {
+        if ($w->offline || !$w->checkHomeOnly(App::url()->type)) {
             return '';
         }
 

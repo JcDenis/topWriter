@@ -1,25 +1,22 @@
 # README
 
-[![Release](https://img.shields.io/badge/release-1.3-a2cbe9.svg)](https://git.dotclear.watch/JcDenis/topWriter/releases)
-[![Date](https://img.shields.io/badge/date-2023.08.13-c44d58.svg)](https://git.dotclear.watch/JcDenis/topWriter/releases)
-[![Dotclear](https://img.shields.io/badge/dotclear-v2.27-137bbb.svg)](https://fr.dotclear.org/download)
+[![Release](https://img.shields.io/badge/release-1.4-a2cbe9.svg)](https://git.dotclear.watch/JcDenis/topWriter/releases)
+![Date](https://img.shields.io/badge/date-2023.10.20-c44d58.svg)
+[![Dotclear](https://img.shields.io/badge/dotclear-v2.28-137bbb.svg)](https://fr.dotclear.org/download)
 [![Dotaddict](https://img.shields.io/badge/dotaddict-official-9ac123.svg)](https://plugins.dotaddict.org/dc2/details/topWriter)
-[![License](https://img.shields.io/github/license/JcDenis/topWriter)](https://git.dotclear.watch/JcDenis/topWriter/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--2.0-ececec.svg)](https://git.dotclear.watch/JcDenis/topWriter/src/branch/master/LICENSE)
 
-## WHAT IS TOPWRITER ?
+## ABOUT
 
-_Top writer_ is a plugin for the open-source 
-web publishing software called Dotclear.
+_topWriter_ is a plugin for the open-source web publishing software called [Dotclear](https://www.dotclear.org).
 
-Show most active contributor on a widget.
+> Show most active contributor on a widget.
 
 ## REQUIREMENTS
 
-_topWriter_ requires: 
-
-* permissions to manage widgets
-* Dotclear 2.27
-* PHP 7.4
+* Dotclear 2.28
+* PHP 8.1
+* Dotclear permissions to manage widgets
 
 ## USAGE
 
@@ -32,10 +29,11 @@ Or add contents to the backend dashboard from your preferences.
 
 ## LINKS
 
-* License : [GNU GPL v2](https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html)
-* Source & contribution : [Gitea Page](https://git.dotclear.watch/JcDenis/topWriter) or [GitHub Page](https://github.com/JcDenis/topWriter)
-* Packages & details: [Gitea Page](https://git.dotclear.watch/JcDenis/topWriter/releases) or [Dotaddict Page](https://plugins.dotaddict.org/dc2/details/topWriter)
-* Discuss and help : [Dotclear Forum](http://forum.dotclear.org/viewtopic.php?pid=333002#p333002)
+* [License](https://git.dotclear.watch/JcDenis/topWriter/src/branch/master/LICENSE)
+* [Packages & details](https://git.dotclear.watch/JcDenis/topWriter/releases) (or on [Dotaddict](https://plugins.dotaddict.org/dc2/details/topWriter))
+* [Sources & contributions](https://git.dotclear.watch/JcDenis/topWriter) (or on [GitHub](https://github.com/JcDenis/topWriter))
+* [Issues & security](https://git.dotclear.watch/JcDenis/topWriter/issues) (or on [GitHub](https://github.com/JcDenis/topWriter/issues))
+* [Discuss & help](http://forum.dotclear.org/viewtopic.php?pid=333002#p333002)
 
 ## CONTRIBUTORS
 

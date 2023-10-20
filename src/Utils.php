@@ -1,41 +1,34 @@
 <?php
-/**
- * @brief topWriter, a plugin for Dotclear 2
- *
- * @package Dotclear
- * @subpackage Plugin
- *
- * @author Jean-Christian Denis, Pierre Van Glabeke
- *
- * @copyright Jean-Christian Denis
- * @copyright GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
- */
+
 declare(strict_types=1);
 
 namespace Dotclear\Plugin\topWriter;
 
-use dcAuth;
-use dcBlog;
-use dcCore;
-use dcUtils;
+use Dotclear\App;
 use Dotclear\Database\Statement\{
     JoinStatement,
     SelectStatement
 };
 use Dotclear\Helper\Date;
 
+/**
+ * @brief       topWriter utils class.
+ * @ingroup     topWriter
+ *
+ * @author      Jean-Christian Denis
+ * @copyright   GPL-2.0 https://www.gnu.org/licenses/gpl-2.0.html
+ */
 class Utils
 {
     public static function posts(string $period, int $limit, bool $sort_desc = true): array
     {
-        // nullsafe
-        if (is_null(dcCore::app()->blog)) {
+        if (!App::blog()->isDefined()) {
             return [];
         }
 
         $sql = new SelectStatement();
         $sql
-            ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
+            ->from($sql->as(App::con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
             ->columns([
                 $sql->count('*', 'count'),
                 'U.user_id',
@@ -43,12 +36,12 @@ class Utils
             ->join(
                 (new JoinStatement())
                     ->inner()
-                    ->from($sql->as(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME, 'U'))
+                    ->from($sql->as(App::con()->prefix() . App::auth()::USER_TABLE_NAME, 'U'))
                     ->on('U.user_id = P.user_id')
                     ->statement()
             )
-            ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
-            ->and('post_status = ' . dcBlog::POST_PUBLISHED)
+            ->where('blog_id = ' . $sql->quote(App::blog()->id()))
+            ->and('post_status = ' . App::blog()::POST_PUBLISHED)
             ->and('user_status = 1')
             ->group('U.user_id')
             ->order('count ' . ($sort_desc ? 'DESC' : 'ASC') . ' , U.user_id ASC')
@@ -67,7 +60,7 @@ class Utils
         while ($rs->fetch()) {
             $sql  = new SelectStatement();
             $user = $sql
-                ->from(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME)
+                ->from(App::con()->prefix() . App::auth()::USER_TABLE_NAME)
                 ->column('*')
                 ->where('user_id = ' . $sql->quote($rs->f('user_id')))
                 ->select();
@@ -76,7 +69,7 @@ class Utils
                 continue;
             }
 
-            $author = dcUtils::getUserCN(
+            $author = App::users()->getUserCN(
                 $user->f('user_id'),
                 $user->f('user_name'),
                 $user->f('user_firstname'),
@@ -87,9 +80,9 @@ class Utils
             }
 
             $i++;
-            if (dcCore::app()->blog->settings->get('authormode')->get('authormode_active')) {
+            if (App::blog()->settings()->get('authormode')->get('authormode_active')) {
                 $res[$i]['author_link'] = '<a href="' .
-                    dcCore::app()->blog->url . dcCore::app()->url->getBase('author') . '/' . $user->f('user_id') . '" ' .
+                    App::blog()->url() . App::url()->getBase('author') . '/' . $user->f('user_id') . '" ' .
                     'title="' . __('Author posts') . '">' . $author . '</a>';
             } elseif ($user->f('user_url')) {
                 $res[$i]['author_link'] = '<a href="' . $user->f('user_url') . '" title="' .
@@ -109,23 +102,22 @@ class Utils
 
     public static function comments(string $period, int $limit, bool $sort_desc = true, bool $exclude = false): array
     {
-        // nullsafe
-        if (is_null(dcCore::app()->blog)) {
+        if (!App::blog()->isDefined()) {
             return [];
         }
 
         $sql = new SelectStatement();
         $sql
-            ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
-            ->from($sql->as(dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME, 'C'))
+            ->from($sql->as(App::con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
+            ->from($sql->as(App::con()->prefix() . App::blog()::COMMENT_TABLE_NAME, 'C'))
             ->columns([
                 $sql->count('*', 'count'),
                 'comment_email',
             ])
-            ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
+            ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->and('P.post_id = C.post_id')
-            ->and('post_status = ' . dcBlog::POST_PUBLISHED)
-            ->and('comment_status = ' . dcBlog::COMMENT_PUBLISHED)
+            ->and('post_status = ' . App::blog()::POST_PUBLISHED)
+            ->and('comment_status = ' . App::blog()::COMMENT_PUBLISHED)
             ->group('comment_email')
             ->order('count ' . ($sort_desc ? 'DESC' : 'ASC'))
             ->limit(abs((int) $limit))
@@ -136,16 +128,16 @@ class Utils
         if ($exclude) {
             $sql->and('comment_email NOT IN (' .
                 (new SelectStatement())
-                    ->from($sql->as(dcCore::app()->prefix . dcAuth::USER_TABLE_NAME, 'U'))
+                    ->from($sql->as(App::con()->prefix() . App::auth()::USER_TABLE_NAME, 'U'))
                     ->column('U.user_email')
                     ->join(
                         (new JoinStatement())
                             ->inner()
-                            ->from($sql->as(dcCore::app()->prefix . dcBlog::POST_TABLE_NAME, 'P'))
+                            ->from($sql->as(App::con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
                             ->on('P.user_id = U.user_id')
                             ->statement()
                     )
-                    ->where('blog_id = ' . $sql->quote(dcCore::app()->blog->id))
+                    ->where('blog_id = ' . $sql->quote(App::blog()->id()))
                     ->group('U.user_email')
                     ->statement() .
             ')');
@@ -161,7 +153,7 @@ class Utils
         while ($rs->fetch()) {
             $sql  = new SelectStatement();
             $user = $sql
-                ->from(dcCore::app()->prefix . dcBlog::COMMENT_TABLE_NAME)
+                ->from(App::con()->prefix() . App::blog()::COMMENT_TABLE_NAME)
                 ->column('*')
                 ->where('comment_email = ' . $sql->quote($rs->f('comment_email')))
                 ->order('comment_dt DESC')
