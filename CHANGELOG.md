@@ -1,3 +1,10 @@
+topWriter 1.5 - 2025.03.03
+===========================================================
+* Require Dotclear 2.33
+* Require PHP 8.1
+* Use Helper\Form
+* Code review
+
 topWriter 1.4.1 - 2025.03.03
 ===========================================================
 * Require Dotclear 2.28
