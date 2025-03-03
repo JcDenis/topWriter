@@ -15,5 +15,9 @@ use Dotclear\Module\MyPlugin;
  */
 class My extends MyPlugin
 {
+    public const TOP_GROUPS = [
+        'Posts',
+        'Comments'
+    ];
     // Use default persmissions
 }

@@ -10,10 +10,12 @@ use Dotclear\Helper\Html\Form\{
     Checkbox,
     Div,
     Label,
+    Li,
     Number,
     Para,
     Select,
-    Text
+    Text,
+    Ul
 };
 use Dotclear\Helper\Html\Html;
 
@@ -26,171 +28,120 @@ use Dotclear\Helper\Html\Html;
  */
 class BackendBehaviors
 {
+    /**
+     * @param   ArrayObject<int, ArrayObject<int,string>>    $__dashboard_items
+     */
     public static function adminDashboardItemsV2(ArrayObject $__dashboard_items): void
     {
         $pref = self::setDefaultPref();
 
-        # top posts
-        if ($pref['topWriterPostsItems']) {
-            $lines = Utils::posts($pref['topWriterPostsPeriod'], $pref['topWriterPostsLimit']);
-            if (!empty($lines)) {
-                $li = [];
-                foreach ($lines as $k => $line) {
-                    $li[] = sprintf('<li><strong>%s</strong> %s (%s)</li>', $k, $line['author'], $line['count']);
+        foreach(My::TOP_GROUPS as $id) {
+            if ($pref[My::id() . $id . 'Items']) {
+                $lines = Utils::comments($pref[My::id() . $id . 'Period'], $pref[My::id() . $id . 'Limit']);
+                if (!empty($lines)) {
+                    $li = [];
+                    foreach ($lines as $k => $line) {
+                        $li[] = (new Li())
+                            ->separator(' ')
+                            ->items([
+                                (new Text('strong', (string) $k)),
+                                (new Text(null, $line['author'] . ' (' . $line['count'] . ')'))
+                            ]);
+                    }
+
+                    $__dashboard_items[0][] = (new Div(My::id() . $id . 'Items'))
+                        ->class(['box', 'small'])
+                        ->items([
+                            (new Text('h3', Html::escapeHTML($id == 'Posts' ? __('Top writer: entries') : __('Top writer: comments')))),
+                            (new Ul())->items($li),
+                        ])->render();
                 }
-
-                # Display
-                $__dashboard_items[0][] = '<div class="box small" id="topWriterPostsItems">' .
-                '<h3>' . Html::escapeHTML(__('Top writer: entries')) . '</h3>' .
-                '<ul>' . implode('', $li) . '</ul>' .
-                '</div>';
-            }
-        }
-
-        # top comments
-        if ($pref['topWriterCommentsItems']) {
-            $lines = Utils::comments($pref['topWriterCommentsPeriod'], $pref['topWriterCommentsLimit']);
-            if (!empty($lines)) {
-                $li = [];
-                foreach ($lines as $k => $line) {
-                    $li[] = sprintf('<li><strong>%s</strong> %s (%s)</li>', $k, $line['author'], $line['count']);
-                }
-
-                # Display
-                $__dashboard_items[0][] = '<div class="box small" id="topWriterCommentsItems">' .
-                '<h3>' . Html::escapeHTML(__('Top writer: comments')) . '</h3>' .
-                '<ul>' . implode('', $li) . '</ul>' .
-                '</div>';
             }
         }
     }
 
     public static function adminDashboardOptionsFormV2(): void
     {
-        $pref = self::setDefaultPref();
+        $pref  = self::setDefaultPref();
+        $items = [];
 
-        echo
-        (new Div())->items([
+        foreach(My::TOP_GROUPS as $id) {
+            $items[] = 
             (new Div())->class('fieldset')->items([
-                (new Text('h4', __('Top writer: entries'))),
+                (new Text('h4', $id == 'Posts' ? __('Top writer: entries') : __('Top writer: comments'))),
                 (new Para())->items([
-                    (new Checkbox('topWriterPostsItems', $pref['topWriterPostsItems']))->value(1),
-                    (new Label(__('Show'), Label::OUTSIDE_LABEL_AFTER))->for('topWriterPostsItems')->class('classic'),
+                    (new Checkbox(My::id() . $id . 'Items', $pref[My::id() . $id . 'Items']))->value(1),
+                    (new Label(__('Show'), Label::OUTSIDE_LABEL_AFTER))->for(My::id() . $id . 'Items')->class('classic'),
                 ]),
                 (new Para())->class('field')->items([
-                    (new Label(__('Period:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterPostsPeriod'),
-                    (new Select('topWriterPostsPeriod'))->default($pref['topWriterPostsPeriod'])->items(Utils::periods()),
+                    (new Label(__('Period:'), Label::OUTSIDE_LABEL_BEFORE))->for(My::id() . $id . 'Period'),
+                    (new Select(My::id() . $id . 'Period'))->default($pref[My::id() . $id . 'Period'])->items(Utils::periods()),
                 ]),
                 (new Para())->class('field')->items([
-                    (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterPostsLimit'),
-                    (new Number('topWriterPostsLimit'))->min(1)->max(20)->value($pref['topWriterPostsLimit']),
+                    (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for(My::id() . $id . 'Limit'),
+                    (new Number(My::id() . $id . 'Limit'))->min(1)->max(20)->value($pref[My::id() . $id . 'Limit']),
                 ]),
-            ]),
-            (new Div())->class('fieldset')->items([
-                (new Text('h4', __('Top writer: comments'))),
-                (new Para())->items([
-                    (new Checkbox('topWriterCommentsItems', $pref['topWriterCommentsItems']))->value(1),
-                    (new Label(__('Show'), Label::OUTSIDE_LABEL_AFTER))->for('topWriterCommentsItems')->class('classic'),
-                ]),
-                (new Para())->class('field')->items([
-                    (new Label(__('Period:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterCommentsPeriod'),
-                    (new Select('topWriterCommentsPeriod'))->default($pref['topWriterCommentsPeriod'])->items(Utils::periods()),
-                ]),
-                (new Para())->class('field')->items([
-                    (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for('topWriterCommentsLimit'),
-                    (new Number('topWriterCommentsLimit'))->min(1)->max(20)->value($pref['topWriterCommentsLimit']),
-                ]),
-            ]),
-        ])->render();
+            ]);
+        }
+
+        echo (new Div())->items($items)->render();
     }
 
     public static function adminAfterDashboardOptionsUpdate(?string $user_id): void
     {
-        App::auth()->prefs()->get('dashboard')->put(
-            'topWriterPostsItems',
-            !empty($_POST['topWriterPostsItems']),
-            'boolean'
-        );
-        App::auth()->prefs()->get('dashboard')->put(
-            'topWriterPostsPeriod',
-            (string) $_POST['topWriterPostsPeriod'],
-            'string'
-        );
-        App::auth()->prefs()->get('dashboard')->put(
-            'topWriterPostsLimit',
-            (int) $_POST['topWriterPostsLimit'],
-            'integer'
-        );
-
-        App::auth()->prefs()->get('dashboard')->put(
-            'topWriterCommentsItems',
-            !empty($_POST['topWriterCommentsItems']),
-            'boolean'
-        );
-        App::auth()->prefs()->get('dashboard')->put(
-            'topWriterCommentsPeriod',
-            (string) $_POST['topWriterCommentsPeriod'],
-            'string'
-        );
-        App::auth()->prefs()->get('dashboard')->put(
-            'topWriterCommentsLimit',
-            (int) $_POST['topWriterCommentsLimit'],
-            'integer'
-        );
+        foreach(My::TOP_GROUPS as $id) {
+            App::auth()->prefs()->get('dashboard')->put(
+                My::id() . $id . 'Items',
+                !empty($_POST[My::id() . $id . 'Items']),
+                'boolean'
+            );
+            App::auth()->prefs()->get('dashboard')->put(
+                My::id() . $id . 'Period',
+                (string) $_POST[My::id() . $id . 'Period'],
+                'string'
+            );
+            App::auth()->prefs()->get('dashboard')->put(
+                My::id() . $id . 'Limit',
+                (int) $_POST[My::id() . $id . 'Limit'],
+                'integer'
+            );
+        }
     }
 
+    /**
+     * @return  array<string, mixed>
+     */
     private static function setDefaultPref(): array
     {
-        if (!App::auth()->prefs()->get('dashboard')->prefExists('topWriterPostsItems')) {
-            App::auth()->prefs()->get('dashboard')->put(
-                'topWriterPostsItems',
-                false,
-                'boolean'
-            );
-        }
-        if (!App::auth()->prefs()->get('dashboard')->prefExists('topWriterPostsPeriod')) {
-            App::auth()->prefs()->get('dashboard')->put(
-                'topWriterPostsPeriod',
-                'month',
-                'string'
-            );
-        }
-        if (!App::auth()->prefs()->get('dashboard')->prefExists('topWriterPostsLimit')) {
-            App::auth()->prefs()->get('dashboard')->put(
-                'topWriterPostsLimit',
-                10,
-                'integer'
-            );
-        }
-        if (!App::auth()->prefs()->get('dashboard')->prefExists('topWriterCommentsItems')) {
-            App::auth()->prefs()->get('dashboard')->put(
-                'topWriterCommentsItems',
-                false,
-                'boolean'
-            );
-        }
-        if (!App::auth()->prefs()->get('dashboard')->prefExists('topWriterCommentsPeriod')) {
-            App::auth()->prefs()->get('dashboard')->put(
-                'topWriterCommentsPeriod',
-                'month',
-                'string'
-            );
-        }
-        if (!App::auth()->prefs()->get('dashboard')->prefExists('topWriterCommentsLimit')) {
-            App::auth()->prefs()->get('dashboard')->put(
-                'topWriterCommentsLimit',
-                10,
-                'integer'
-            );
+        $res = [];
+        foreach(My::TOP_GROUPS as $id) {
+            if (!App::auth()->prefs()->get('dashboard')->prefExists(My::id() . $id . 'Items')) {
+                App::auth()->prefs()->get('dashboard')->put(
+                    My::id() . $id . 'Items',
+                    false,
+                    'boolean'
+                );
+            }
+            if (!App::auth()->prefs()->get('dashboard')->prefExists(My::id() . $id . 'Period')) {
+                App::auth()->prefs()->get('dashboard')->put(
+                    My::id() . $id . 'Period',
+                    'month',
+                    'string'
+                );
+            }
+            if (!App::auth()->prefs()->get('dashboard')->prefExists(My::id() . $id . 'Limit')) {
+                App::auth()->prefs()->get('dashboard')->put(
+                    My::id() . $id . 'Limit',
+                    10,
+                    'integer'
+                );
+            }
+
+            $res[My::id() . $id . 'Items']  = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Items');
+            $res[My::id() . $id . 'Period'] = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Period');
+            $res[My::id() . $id . 'Limit']  = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Limit') ?? 10;
         }
 
-        return [
-            'topWriterPostsItems'     => App::auth()->prefs()->get('dashboard')->get('topWriterPostsItems'),
-            'topWriterPostsPeriod'    => App::auth()->prefs()->get('dashboard')->get('topWriterPostsPeriod'),
-            'topWriterPostsLimit'     => App::auth()->prefs()->get('dashboard')->get('topWriterPostsLimit') ?? 10,
-            'topWriterCommentsItems'  => App::auth()->prefs()->get('dashboard')->get('topWriterCommentsItems'),
-            'topWriterCommentsPeriod' => App::auth()->prefs()->get('dashboard')->get('topWriterCommentsPeriod'),
-            'topWriterCommentsLimit'  => App::auth()->prefs()->get('dashboard')->get('topWriterCommentsLimit') ?? 10,
-        ];
+        return $res;
     }
 }

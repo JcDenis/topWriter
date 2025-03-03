@@ -6,6 +6,9 @@ namespace Dotclear\Plugin\topWriter;
 
 use Dotclear\App;
 use Dotclear\Helper\Html\Html;
+use Dotclear\Helper\Html\Form\Li;
+use Dotclear\Helper\Html\Form\Text;
+use Dotclear\Helper\Html\Form\Ul;
 use Dotclear\Plugin\widgets\WidgetsStack;
 use Dotclear\Plugin\widgets\WidgetsElement;
 
@@ -121,17 +124,17 @@ class Widgets
             return '';
         }
 
-        $lines = Utils::comments($w->period, (int) $w->limit, $w->sort == 'desc', (bool) $w->exclude);
+        $lines = Utils::comments($w->get('period'), (int) $w->get('limit'), $w->get('sort') == 'desc', (bool) $w->get('exclude'));
         if (empty($lines)) {
             return '';
         }
 
         return $w->renderDiv(
-            (bool) $w->content_only,
-            'topcomments ' . $w->class,
+            (bool) $w->get('content_only'),
+            'topcomments ' . $w->get('class'),
             '',
-            ($w->title ? $w->renderTitle(Html::escapeHTML($w->title)) : '') .
-            sprintf('<ul>%s</ul>', implode('', self::lines($lines, 'comments', $w->text)))
+            ($w->get('title') ? $w->renderTitle(Html::escapeHTML($w->get('title'))) : '') .
+            (new Ul())->items(self::lines($lines, 'comments', $w->get('text')))->render()
         );
     }
 
@@ -141,34 +144,43 @@ class Widgets
             return '';
         }
 
-        $lines = Utils::posts($w->period, (int) $w->limit, $w->sort == 'desc');
+        $lines = Utils::posts($w->get('period'), (int) $w->get('limit'), $w->get('sort') == 'desc');
         if (empty($lines)) {
             return '';
         }
 
         return $w->renderDiv(
-            (bool) $w->content_only,
-            'topentries ' . $w->class,
+            (bool) $w->get('content_only'),
+            'topentries ' . $w->get('class'),
             '',
-            ($w->title ? $w->renderTitle(Html::escapeHTML($w->title)) : '') .
-            sprintf('<ul>%s</ul>', implode('', self::lines($lines, 'posts', $w->text)))
+            ($w->get('title') ? $w->renderTitle(Html::escapeHTML($w->get('title'))) : '') .
+            (new Ul())->items(self::lines($lines, 'posts', $w->get('text')))->render()
         );
     }
 
+    /**
+     * @param   array<int, array<string, string>>   $lines
+     * @return  array<int, Li>
+     */
     private static function lines(array $lines, string $id, string $text): array
     {
         $li = [];
         foreach ($lines as $k => $line) {
-            $rank   = '<span class="top' . $id . '-rank">' . $k . '</span>';
-            $author = '<span class="top' . $id . '-author">' . (empty($line['author_link']) ? $line['author'] : $line['author_link']) . '</span>';
-            $li[]   = sprintf(
-                '<li>%s</li>',
-                str_replace(
-                    ['%rank%', '%author%', '%count%'],
-                    [$rank, $author, $line['count']],
-                    $text
-                )
-            );
+            $li[] = (new Li())->items([
+                    (new Text(null, str_replace(
+                        [
+                            '%rank%',
+                            '%author%',
+                            '%count%'
+                        ],
+                        [
+                            (new Text('span', (string) $k))->class('top' . $id . '-rank')->render(),
+                            (new Text('span', empty($line['author_link']) ? $line['author'] : $line['author_link']))->class('top' . $id . '-author')->render(),
+                            $line['count']
+                        ],
+                        $text
+                    )))
+                ]);
         }
 
         return $li;

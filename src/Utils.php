@@ -20,6 +20,9 @@ use Dotclear\Helper\Date;
  */
 class Utils
 {
+    /**
+     * @return  array<int, array<string, string>>
+     */
     public static function posts(string $period, int $limit, bool $sort_desc = true): array
     {
         if (!App::blog()->isDefined()) {
@@ -100,6 +103,9 @@ class Utils
         return $i ? $res : [];
     }
 
+    /**
+     * @return  array<int, array<string, string>>
+     */
     public static function comments(string $period, int $limit, bool $sort_desc = true, bool $exclude = false): array
     {
         if (!App::blog()->isDefined()) {
@@ -213,6 +219,9 @@ class Utils
         $sql->and($field . ' > TIMESTAMP ' . $sql->quote(Date::str($pattern, time() - $time)));
     }
 
+    /**
+     * @return  array<string, string>
+     */
     public static function periods(): array
     {
         return [

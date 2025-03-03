@@ -27,7 +27,9 @@ class Frontend extends Process
             return false;
         }
 
-        App::behavior()->addBehavior('initWidgets', Widgets::initWidgets(...));
+        App::behavior()->addBehaviors([
+            'initWidgets' => Widgets::initWidgets(...),
+        ]);
 
         return true;
     }
