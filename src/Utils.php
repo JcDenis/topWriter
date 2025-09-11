@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\topWriter;
 
 use Dotclear\App;
-use Dotclear\Database\Statement\{
-    JoinStatement,
-    SelectStatement
-};
+use Dotclear\Database\Statement\JoinStatement;
+use Dotclear\Database\Statement\SelectStatement;
 use Dotclear\Helper\Date;
 
 /**
@@ -31,7 +29,7 @@ class Utils
 
         $sql = new SelectStatement();
         $sql
-            ->from($sql->as(App::con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
+            ->from($sql->as(App::db()->con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
             ->columns([
                 $sql->count('*', 'count'),
                 'U.user_id',
@@ -39,7 +37,7 @@ class Utils
             ->join(
                 (new JoinStatement())
                     ->inner()
-                    ->from($sql->as(App::con()->prefix() . App::auth()::USER_TABLE_NAME, 'U'))
+                    ->from($sql->as(App::db()->con()->prefix() . App::auth()::USER_TABLE_NAME, 'U'))
                     ->on('U.user_id = P.user_id')
                     ->statement()
             )
@@ -63,7 +61,7 @@ class Utils
         while ($rs->fetch()) {
             $sql  = new SelectStatement();
             $user = $sql
-                ->from(App::con()->prefix() . App::auth()::USER_TABLE_NAME)
+                ->from(App::db()->con()->prefix() . App::auth()::USER_TABLE_NAME)
                 ->column('*')
                 ->where('user_id = ' . $sql->quote($rs->f('user_id')))
                 ->select();
@@ -114,8 +112,8 @@ class Utils
 
         $sql = new SelectStatement();
         $sql
-            ->from($sql->as(App::con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
-            ->from($sql->as(App::con()->prefix() . App::blog()::COMMENT_TABLE_NAME, 'C'))
+            ->from($sql->as(App::db()->con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
+            ->from($sql->as(App::db()->con()->prefix() . App::blog()::COMMENT_TABLE_NAME, 'C'))
             ->columns([
                 $sql->count('*', 'count'),
                 'comment_email',
@@ -134,12 +132,12 @@ class Utils
         if ($exclude) {
             $sql->and('comment_email NOT IN (' .
                 (new SelectStatement())
-                    ->from($sql->as(App::con()->prefix() . App::auth()::USER_TABLE_NAME, 'U'))
+                    ->from($sql->as(App::db()->con()->prefix() . App::auth()::USER_TABLE_NAME, 'U'))
                     ->column('U.user_email')
                     ->join(
                         (new JoinStatement())
                             ->inner()
-                            ->from($sql->as(App::con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
+                            ->from($sql->as(App::db()->con()->prefix() . App::blog()::POST_TABLE_NAME, 'P'))
                             ->on('P.user_id = U.user_id')
                             ->statement()
                     )
@@ -159,7 +157,7 @@ class Utils
         while ($rs->fetch()) {
             $sql  = new SelectStatement();
             $user = $sql
-                ->from(App::con()->prefix() . App::blog()::COMMENT_TABLE_NAME)
+                ->from(App::db()->con()->prefix() . App::blog()::COMMENT_TABLE_NAME)
                 ->column('*')
                 ->where('comment_email = ' . $sql->quote($rs->f('comment_email')))
                 ->order('comment_dt DESC')

@@ -6,17 +6,15 @@ namespace Dotclear\Plugin\topWriter;
 
 use ArrayObject;
 use Dotclear\App;
-use Dotclear\Helper\Html\Form\{
-    Checkbox,
-    Div,
-    Label,
-    Li,
-    Number,
-    Para,
-    Select,
-    Text,
-    Ul
-};
+use Dotclear\Helper\Html\Form\Checkbox;
+use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Helper\Html\Form\Label;
+use Dotclear\Helper\Html\Form\Li;
+use Dotclear\Helper\Html\Form\Number;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Select;
+use Dotclear\Helper\Html\Form\Text;
+use Dotclear\Helper\Html\Form\Ul;
 use Dotclear\Helper\Html\Html;
 
 /**
