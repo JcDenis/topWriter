@@ -1,10 +1,10 @@
 # README
 
-[![Release](https://img.shields.io/badge/release-1.4-a2cbe9.svg)](https://github.com/JcDenis/topWriter/releases)
-![Date](https://img.shields.io/badge/date-2023.10.20-c44d58.svg)
-[![Dotclear](https://img.shields.io/badge/dotclear-v2.33-137bbb.svg)](https://fr.dotclear.org/download)
+[![Release](https://img.shields.io/github/v/release/jcdenis/topWriter?color=lightblue)](https://github.com/JcDenis/topWriter/releases)
+![Date](https://img.shields.io/github/release-date/jcdenis/topWriter?color=red)
+[![Dotclear](https://img.shields.io/badge/dotclear-v2.36-137bbb.svg)](https://fr.dotclear.org/download)
 [![Dotaddict](https://img.shields.io/badge/dotaddict-official-9ac123.svg)](https://plugins.dotaddict.org/dc2/details/topWriter)
-[![License](https://img.shields.io/badge/license-GPL--2.0-ececec.svg)](https://github.com/JcDenis/topWriter/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/jcdenis/topWriter?color=white)](https://github.com/JcDenis/topWriter/blob/master/LICENSE)
 
 ## ABOUT
 
@@ -14,7 +14,7 @@ _topWriter_ is a plugin for the open-source web publishing software called [Dotc
 
 ## REQUIREMENTS
 
-* Dotclear 2.33
+* Dotclear 2.36
 * PHP 8.1
 * Dotclear permissions to manage widgets
 
