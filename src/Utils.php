@@ -8,6 +8,7 @@ use Dotclear\App;
 use Dotclear\Database\Statement\JoinStatement;
 use Dotclear\Database\Statement\SelectStatement;
 use Dotclear\Helper\Date;
+use Dotclear\Helper\Html\Html;
 
 /**
  * @brief       topWriter utils class.
@@ -42,7 +43,7 @@ class Utils
                     ->statement()
             )
             ->where('blog_id = ' . $sql->quote(App::blog()->id()))
-            ->and('post_status = ' . App::blog()::POST_PUBLISHED)
+            ->and('post_status = ' . App::status()->post()::PUBLISHED)
             ->and('user_status = 1')
             ->group('U.user_id')
             ->order('count ' . ($sort_desc ? 'DESC' : 'ASC') . ' , U.user_id ASC')
@@ -63,7 +64,7 @@ class Utils
             $user = $sql
                 ->from(App::db()->con()->prefix() . App::auth()::USER_TABLE_NAME)
                 ->column('*')
-                ->where('user_id = ' . $sql->quote($rs->f('user_id')))
+                ->where('user_id = ' . $sql->quote($rs->strField('user_id')))
                 ->select();
 
             if (is_null($user) || $user->isEmpty()) {
@@ -71,10 +72,10 @@ class Utils
             }
 
             $author = App::users()->getUserCN(
-                $user->f('user_id'),
-                $user->f('user_name'),
-                $user->f('user_firstname'),
-                $user->f('user_displayname')
+                $user->strField('user_id'),
+                $user->strField('user_name'),
+                $user->strField('user_firstname'),
+                $user->strField('user_displayname')
             );
             if (empty($author)) {
                 continue;
@@ -83,18 +84,19 @@ class Utils
             $i++;
             if (App::blog()->settings()->get('authormode')->get('authormode_active')) {
                 $res[$i]['author_link'] = '<a href="' .
-                    App::blog()->url() . App::url()->getBase('author') . '/' . $user->f('user_id') . '" ' .
-                    'title="' . __('Author posts') . '">' . $author . '</a>';
-            } elseif ($user->f('user_url')) {
-                $res[$i]['author_link'] = '<a href="' . $user->f('user_url') . '" title="' .
-                    __('Author link') . '">' . $author . '</a>';
+                    App::blog()->url() . App::url()->getBase('author') . '/' . rawurlencode($user->strField('user_id')) . '" ' .
+                    'title="' . __('Author posts') . '">' . Html::escapeHTML($author) . '</a>';
+            } elseif ($user->strField('user_url') !== '') {
+                $res[$i]['author_link'] = '<a href="' . Html::escapeURL($user->strField('user_url')) . '" title="' .
+                    __('Author link') . '">' . Html::escapeHTML($author) . '</a>';
             }
-            $res[$i]['author'] = $author;
+            $res[$i]['author'] = Html::escapeHTML($author);
 
-            if ((int) $rs->f('count') == 0) {
+            $count = $rs->intField('count');
+            if ($count === 0) {
                 $res[$i]['count'] = __('no entries');
             } else {
-                $res[$i]['count'] = sprintf(__('one entry', '%s entries', (int) $rs->f('count')), $rs->f('count'));
+                $res[$i]['count'] = sprintf(__('one entry', '%s entries', $count), $count);
             }
         }
 
@@ -120,8 +122,8 @@ class Utils
             ])
             ->where('blog_id = ' . $sql->quote(App::blog()->id()))
             ->and('P.post_id = C.post_id')
-            ->and('post_status = ' . App::blog()::POST_PUBLISHED)
-            ->and('comment_status = ' . App::blog()::COMMENT_PUBLISHED)
+            ->and('post_status = ' . App::status()->post()::PUBLISHED)
+            ->and('comment_status = ' . App::status()->comment()::PUBLISHED)
             ->group('comment_email')
             ->order('count ' . ($sort_desc ? 'DESC' : 'ASC'))
             ->limit(abs((int) $limit))
@@ -159,26 +161,27 @@ class Utils
             $user = $sql
                 ->from(App::db()->con()->prefix() . App::blog()::COMMENT_TABLE_NAME)
                 ->column('*')
-                ->where('comment_email = ' . $sql->quote($rs->f('comment_email')))
+                ->where('comment_email = ' . $sql->quote($rs->strField('comment_email')))
                 ->order('comment_dt DESC')
                 ->select();
 
-            if (is_null($user) || !$user->f('comment_author')) {
+            if (is_null($user) || $user->strField('comment_author') === '') {
                 continue;
             }
 
             $i++;
 
-            if ($user->f('comment_site')) {
-                $res[$i]['author_link'] = '<a href="' . $user->f('comment_site') . '" title="' .
-                    __('Author link') . '">' . $user->f('comment_author') . '</a>';
+            if ($user->strField('comment_site') !== '') {
+                $res[$i]['author_link'] = '<a href="' . Html::escapeURL($user->strField('comment_site')) . '" title="' .
+                    __('Author link') . '">' . Html::escapeHTML($user->strField('comment_author')) . '</a>';
             }
-            $res[$i]['author'] = $user->f('comment_author');
+            $res[$i]['author'] = Html::escapeHTML($user->strField('comment_author'));
 
-            if ((int) $rs->f('count') == 0) {
+            $count = $rs->intField('count');
+            if ($count === 0) {
                 $res[$i]['count'] = __('no comments');
             } else {
-                $res[$i]['count'] = sprintf(__('one comment', '%s comments', (int) $rs->f('count')), $rs->f('count'));
+                $res[$i]['count'] = sprintf(__('one comment', '%s comments', $count), $count);
             }
         }
 
@@ -214,7 +217,7 @@ class Utils
                 return;
         }
 
-        $sql->and($field . ' > TIMESTAMP ' . $sql->quote(Date::str($pattern, time() - $time)));
+        $sql->and($field . ' > ' . $sql->quote(Date::str($pattern, time() - $time)));
     }
 
     /**

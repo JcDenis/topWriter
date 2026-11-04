@@ -120,41 +120,41 @@ class Widgets
 
     public static function topComWidget(WidgetsElement $w): string
     {
-        if ($w->offline || !$w->checkHomeOnly(App::url()->type)) {
+        if ($w->offline || !$w->checkHomeOnly(App::url()->getType())) {
             return '';
         }
 
-        $lines = Utils::comments($w->get('period'), (int) $w->get('limit'), $w->get('sort') == 'desc', (bool) $w->get('exclude'));
+        $lines = Utils::comments(is_string($period = $w->get('period')) ? $period : '', is_numeric($limit = $w->get('limit')) ? (int) $limit : 10, $w->get('sort') === 'desc', (bool) $w->get('exclude'));
         if (empty($lines)) {
             return '';
         }
 
         return $w->renderDiv(
             (bool) $w->get('content_only'),
-            'topcomments ' . $w->get('class'),
+            'topcomments ' . (is_string($class = $w->get('class')) ? $class : ''),
             '',
-            ($w->get('title') ? $w->renderTitle(Html::escapeHTML($w->get('title'))) : '') .
-            (new Ul())->items(self::lines($lines, 'comments', $w->get('text')))->render()
+            (is_string($title = $w->get('title')) && $title !== '' ? $w->renderTitle(Html::escapeHTML($title)) : '') .
+            (new Ul())->items(self::lines($lines, 'comments', is_string($text = $w->get('text')) ? $text : ''))->render()
         );
     }
 
     public static function topPostWidget(WidgetsElement $w): string
     {
-        if ($w->offline || !$w->checkHomeOnly(App::url()->type)) {
+        if ($w->offline || !$w->checkHomeOnly(App::url()->getType())) {
             return '';
         }
 
-        $lines = Utils::posts($w->get('period'), (int) $w->get('limit'), $w->get('sort') == 'desc');
+        $lines = Utils::posts(is_string($period = $w->get('period')) ? $period : '', is_numeric($limit = $w->get('limit')) ? (int) $limit : 10, $w->get('sort') === 'desc');
         if (empty($lines)) {
             return '';
         }
 
         return $w->renderDiv(
             (bool) $w->get('content_only'),
-            'topentries ' . $w->get('class'),
+            'topentries ' . (is_string($class = $w->get('class')) ? $class : ''),
             '',
-            ($w->get('title') ? $w->renderTitle(Html::escapeHTML($w->get('title'))) : '') .
-            (new Ul())->items(self::lines($lines, 'posts', $w->get('text')))->render()
+            (is_string($title = $w->get('title')) && $title !== '' ? $w->renderTitle(Html::escapeHTML($title)) : '') .
+            (new Ul())->items(self::lines($lines, 'posts', is_string($text = $w->get('text')) ? $text : ''))->render()
         );
     }
 

@@ -34,8 +34,8 @@ class BackendBehaviors
         $pref = self::setDefaultPref();
 
         foreach(My::TOP_GROUPS as $id) {
-            if ($pref[My::id() . $id . 'Items']) {
-                $lines = Utils::comments($pref[My::id() . $id . 'Period'], $pref[My::id() . $id . 'Limit']);
+            if ($pref[$id]['items']) {
+                $lines = $id === 'Posts' ? Utils::posts($pref[$id]['period'], $pref[$id]['limit']) : Utils::comments($pref[$id]['period'], $pref[$id]['limit']);
                 if (!empty($lines)) {
                     $li = [];
                     foreach ($lines as $k => $line) {
@@ -68,16 +68,16 @@ class BackendBehaviors
             (new Div())->class('fieldset')->items([
                 (new Text('h4', $id == 'Posts' ? __('Top writer: entries') : __('Top writer: comments'))),
                 (new Para())->items([
-                    (new Checkbox(My::id() . $id . 'Items', $pref[My::id() . $id . 'Items']))->value(1),
+                    (new Checkbox(My::id() . $id . 'Items', $pref[$id]['items']))->value(1),
                     (new Label(__('Show'), Label::OUTSIDE_LABEL_AFTER))->for(My::id() . $id . 'Items')->class('classic'),
                 ]),
                 (new Para())->class('field')->items([
                     (new Label(__('Period:'), Label::OUTSIDE_LABEL_BEFORE))->for(My::id() . $id . 'Period'),
-                    (new Select(My::id() . $id . 'Period'))->default($pref[My::id() . $id . 'Period'])->items(Utils::periods()),
+                    (new Select(My::id() . $id . 'Period'))->default($pref[$id]['period'])->items(Utils::periods()),
                 ]),
                 (new Para())->class('field')->items([
                     (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for(My::id() . $id . 'Limit'),
-                    (new Number(My::id() . $id . 'Limit'))->min(1)->max(20)->value($pref[My::id() . $id . 'Limit']),
+                    (new Number(My::id() . $id . 'Limit'))->min(1)->max(20)->value($pref[$id]['limit']),
                 ]),
             ]);
         }
@@ -95,19 +95,19 @@ class BackendBehaviors
             );
             App::auth()->prefs()->get('dashboard')->put(
                 My::id() . $id . 'Period',
-                (string) $_POST[My::id() . $id . 'Period'],
+                is_string($_POST[My::id() . $id . 'Period'] ?? null) ? $_POST[My::id() . $id . 'Period'] : 'month',
                 'string'
             );
             App::auth()->prefs()->get('dashboard')->put(
                 My::id() . $id . 'Limit',
-                (int) $_POST[My::id() . $id . 'Limit'],
+                is_numeric($_POST[My::id() . $id . 'Limit'] ?? '') ? (int) $_POST[My::id() . $id . 'Limit'] : 10,
                 'integer'
             );
         }
     }
 
     /**
-     * @return  array<string, mixed>
+     * @return  array<string, array{items: bool, period: string, limit: int}>
      */
     private static function setDefaultPref(): array
     {
@@ -135,9 +135,14 @@ class BackendBehaviors
                 );
             }
 
-            $res[My::id() . $id . 'Items']  = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Items');
-            $res[My::id() . $id . 'Period'] = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Period');
-            $res[My::id() . $id . 'Limit']  = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Limit') ?? 10;
+            $period = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Period');
+            $limit  = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Limit');
+
+            $res[$id] = [
+                'items'  => (bool) App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Items'),
+                'period' => is_string($period) ? $period : 'month',
+                'limit'  => is_numeric($limit) ? (int) $limit : 10,
+            ];
         }
 
         return $res;
