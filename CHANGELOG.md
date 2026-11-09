@@ -1,3 +1,9 @@
+topWriter 1.8 - 2026.11.09
+===========================================================
+* Fix DA URLs
+* Add Claude to contributors
+* Fix compatibility with Dotclear 2.40
+
 topWriter 1.7 - 2026.11.05
 ===========================================================
 * Bump Dotclear from 2.36 to 2.39
