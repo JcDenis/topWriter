@@ -120,7 +120,7 @@ class Widgets
 
     public static function topComWidget(WidgetsElement $w): string
     {
-        if ($w->offline || !$w->checkHomeOnly(App::url()->getType())) {
+        if ($w->isOffline() || !$w->checkHomeOnly(App::url()->getType())) {
             return '';
         }
 
@@ -140,7 +140,7 @@ class Widgets
 
     public static function topPostWidget(WidgetsElement $w): string
     {
-        if ($w->offline || !$w->checkHomeOnly(App::url()->getType())) {
+        if ($w->isOffline() || !$w->checkHomeOnly(App::url()->getType())) {
             return '';
         }
 
