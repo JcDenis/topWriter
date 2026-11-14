@@ -7,7 +7,7 @@
     <desc>Ranking of the most prolific writers and/or commentators</desc>
     <file>https://github.com/JcDenis/topWriter/releases/download/v1.8/plugin-topWriter.zip</file>
     <da:dcmin>2.39</da:dcmin>
-    <da:details>https://github.com/JcDenis/topWriter/src/branch/master/README.md</da:details>
+    <da:details>https://github.com/JcDenis/topWriter/blob/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/topWriter/issues</da:support>
   </module>
 </modules>
