@@ -12,6 +12,8 @@ _topWriter_ is a plugin for the open-source web publishing software called [Dotc
 
 > Show most active contributor on a widget.
 
+A [user guide in French](https://github.com/JcDenis/topWriter/blob/master/docs/fr/utilisation.md) is available.
+
 ## REQUIREMENTS
 
 * Dotclear 2.39
@@ -29,6 +31,7 @@ Or add contents to the backend dashboard from your preferences.
 
 ## LINKS
 
+* [User guide (in French)](https://github.com/JcDenis/topWriter/blob/master/docs/fr/utilisation.md)
 * [License](https://github.com/JcDenis/topWriter/blob/master/LICENSE)
 * [Packages & details](https://github.com/JcDenis/topWriter/releases) (or on [Repository](https://dotclear.org/plugin/detail/topWriter))
 * [Sources & contributions](https://github.com/JcDenis/topWriter)
