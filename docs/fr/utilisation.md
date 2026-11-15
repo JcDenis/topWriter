@@ -52,9 +52,9 @@ Le champ « Texte » accepte trois mots-clés, remplacés à l'affichage :
 
 * `%rank%` : la place (1, 2, 3…) ;
 * `%author%` : le nom ;
-* `%count%` : le nombre, écrit en toutes lettres : « 3 publications », « un commentaire ».
+* `%count%` : le nombre, avec son nom : « 3 billets », « un commentaire ».
 
-Le texte par défaut est `%author% (%count%)`. Avec `%rank%. %author% : %count%`, vous obtenez « 1. Marie Durand : 3 publications ».
+Le texte par défaut est `%author% (%count%)`. Avec `%rank%. %author% : %count%`, vous obtenez « 1. Marie Durand : 3 billets ».
 
 Le nom est un lien quand l'auteur a une adresse de site : pour un rédacteur, sa page d'auteur si le plugin authorMode est actif, sinon l'adresse de son profil ; pour un visiteur, le site indiqué dans son commentaire.
 
@@ -65,7 +65,7 @@ Chaque utilisateur peut aussi voir ces classements sur son tableau de bord.
 1. Ouvrez « Mes préférences » (en haut à droite).
 2. Allez dans l'onglet « Mes favoris ».
 3. Repérez les deux cadres « Top rédacteur : billets » et « Top rédacteur : commentaires ».
-4. Cochez « Afficher », choisissez la période et la limite (de 1 à 20).
+4. Cochez « Afficher », choisissez la période, l'ordre et la limite (de 1 à 20). Pour les commentaires, vous pouvez aussi exclure les auteurs de billets.
 5. Enregistrez.
 
 ![Les réglages du tableau de bord](img/preferences-tableau-de-bord.png)
@@ -76,11 +76,12 @@ Deux encadrés apparaissent alors sur le tableau de bord.
 
 ![Le classement des commentaires sur le tableau de bord](img/tableau-de-bord-commentaires.png)
 
-Par défaut, rien ne s'affiche sur le tableau de bord, et la période est « dernier mois ». Le tableau de bord montre toujours les plus actifs d'abord, sans lien.
+Par défaut, rien ne s'affiche sur le tableau de bord, la période est « dernier mois » et les plus actifs sont en premier. Les noms n'y sont pas des liens.
 
 ## Bon à savoir
 
 * Seuls les billets publiés et les commentaires publiés sont comptés. Les comptes d'utilisateurs désactivés ne sont pas comptés.
-* Les commentaires sont regroupés par adresse e-mail : une même personne qui écrit avec deux noms apparaît une seule fois, sous le nom de son commentaire le plus récent.
-* Un mois compte 30 jours et une année compte 360 jours.
+* Les commentaires sont regroupés par adresse e-mail, sans tenir compte des majuscules : une même personne qui écrit avec deux noms apparaît une seule fois, sous le nom de son commentaire le plus récent. Sans adresse e-mail, ils sont regroupés par nom.
+* À nombre égal, le plus récemment actif passe en premier.
+* Les périodes suivent le calendrier : « dernier mois » remonte au même jour du mois précédent, « dernière année » au même jour de l'année précédente.
 * Les widgets ne comptent que le blog courant.
