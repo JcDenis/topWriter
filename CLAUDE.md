@@ -28,7 +28,8 @@ Required Dotclear and PHP versions: see `_define.php`.
 
 ## Pitfalls
 
-* None recorded yet: add here the traps met while working on the module.
+* Commentators are grouped by email (lower case), or by name when they have no email.
+* Periods are calendar ones (`-1 month`, `-1 year`) in blog timezone, as entries and comments dates.
 
 ## Testing
 
