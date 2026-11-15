@@ -48,8 +48,8 @@ msgstr "aucun billet"
 
 msgid "one entry"
 msgid_plural "%s entries"
-msgstr[0] "une publication"
-msgstr[1] "%s publications"
+msgstr[0] "un billet"
+msgstr[1] "%s billets"
 
 msgid "no comments"
 msgstr "aucun commentaire"
@@ -71,7 +71,7 @@ msgstr "dernier mois"
 msgid "last year"
 msgstr "dernière année"
 
-msgid "from begining"
+msgid "from the beginning"
 msgstr "depuis le début"
 
 msgid "Ranking of the most prolific writers and/or commentators"
