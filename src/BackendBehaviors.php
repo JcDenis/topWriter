@@ -10,6 +10,7 @@ use Dotclear\Helper\Html\Form\Checkbox;
 use Dotclear\Helper\Html\Form\Div;
 use Dotclear\Helper\Html\Form\Label;
 use Dotclear\Helper\Html\Form\Li;
+use Dotclear\Helper\Html\Form\None;
 use Dotclear\Helper\Html\Form\Number;
 use Dotclear\Helper\Html\Form\Para;
 use Dotclear\Helper\Html\Form\Select;
@@ -35,7 +36,9 @@ class BackendBehaviors
 
         foreach(My::TOP_GROUPS as $id) {
             if ($pref[$id]['items']) {
-                $lines = $id === 'Posts' ? Utils::posts($pref[$id]['period'], $pref[$id]['limit']) : Utils::comments($pref[$id]['period'], $pref[$id]['limit']);
+                $lines = $id === 'Posts' ?
+                    Utils::posts($pref[$id]['period'], $pref[$id]['limit'], $pref[$id]['sort'] === 'desc') :
+                    Utils::comments($pref[$id]['period'], $pref[$id]['limit'], $pref[$id]['sort'] === 'desc', $pref[$id]['exclude']);
                 if (!empty($lines)) {
                     $li = [];
                     foreach ($lines as $k => $line) {
@@ -76,9 +79,22 @@ class BackendBehaviors
                     (new Select(My::id() . $id . 'Period'))->default($pref[$id]['period'])->items(Utils::periods()),
                 ]),
                 (new Para())->class('field')->items([
+                    (new Label(__('Sort:'), Label::OUTSIDE_LABEL_BEFORE))->for(My::id() . $id . 'Sort'),
+                    (new Select(My::id() . $id . 'Sort'))->default($pref[$id]['sort'])->items([
+                        __('Descending') => 'desc',
+                        __('Ascending')  => 'asc',
+                    ]),
+                ]),
+                (new Para())->class('field')->items([
                     (new Label(__('Limit:'), Label::OUTSIDE_LABEL_BEFORE))->for(My::id() . $id . 'Limit'),
                     (new Number(My::id() . $id . 'Limit'))->min(1)->max(20)->value($pref[$id]['limit']),
                 ]),
+                $id === 'Comments' ?
+                    (new Para())->items([
+                        (new Checkbox(My::id() . $id . 'Exclude', $pref[$id]['exclude']))->value(1),
+                        (new Label(__('Exclude post writer from list'), Label::OUTSIDE_LABEL_AFTER))->for(My::id() . $id . 'Exclude')->class('classic'),
+                    ]) :
+                    (new None()),
             ]);
         }
 
@@ -103,11 +119,21 @@ class BackendBehaviors
                 is_numeric($_POST[My::id() . $id . 'Limit'] ?? '') ? (int) $_POST[My::id() . $id . 'Limit'] : 10,
                 'integer'
             );
+            App::auth()->prefs()->get('dashboard')->put(
+                My::id() . $id . 'Sort',
+                ($_POST[My::id() . $id . 'Sort'] ?? '') === 'asc' ? 'asc' : 'desc',
+                'string'
+            );
+            App::auth()->prefs()->get('dashboard')->put(
+                My::id() . $id . 'Exclude',
+                !empty($_POST[My::id() . $id . 'Exclude']),
+                'boolean'
+            );
         }
     }
 
     /**
-     * @return  array<string, array{items: bool, period: string, limit: int}>
+     * @return  array<string, array{items: bool, period: string, limit: int, sort: string, exclude: bool}>
      */
     private static function setDefaultPref(): array
     {
@@ -139,9 +165,11 @@ class BackendBehaviors
             $limit  = App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Limit');
 
             $res[$id] = [
-                'items'  => (bool) App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Items'),
-                'period' => is_string($period) ? $period : 'month',
-                'limit'  => is_numeric($limit) ? (int) $limit : 10,
+                'items'   => (bool) App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Items'),
+                'period'  => is_string($period) ? $period : 'month',
+                'limit'   => is_numeric($limit) ? (int) $limit : 10,
+                'sort'    => App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Sort') === 'asc' ? 'asc' : 'desc',
+                'exclude' => (bool) App::auth()->prefs()->get('dashboard')->get(My::id() . $id . 'Exclude'),
             ];
         }
 
