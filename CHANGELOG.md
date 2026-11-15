@@ -1,3 +1,9 @@
+topWriter 1.9 - 2026.11.15
+===========================================================
+* [fix] Commentators grouped by email whatever the case or by name, ties by last activity, dashboard sort and exclusion, calendar periods, fewer queries filtered on blog
+* [lang] Use billet in French
+* [docs] Add a user guide in French, with screenshots
+
 topWriter 1.8 - 2026.11.09
 ===========================================================
 * Fix DA URLs

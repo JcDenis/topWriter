@@ -21,7 +21,7 @@ $this->registerModule(
     'Top writer',
     'Ranking of the most prolific writers and/or commentators',
     'Jean-Christian Denis, Pierre Van Glabeke',
-    '1.8',
+    '1.9',
     [
         'requires'    => [['core', '2.39']],
         'permissions' => 'My',
@@ -29,6 +29,6 @@ $this->registerModule(
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
         'details'     => 'https://github.com/JcDenis/' . $this->id . '/',
         'repository'  => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
-        'date'        => '2026-11-09T19:20:13+00:00',
+        'date'        => '2026-11-15T15:12:00+00:00',
     ]
 );
